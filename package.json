@@ -1,0 +1,35 @@
+{
+  "name": "invitacion-scarlett-byron",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Invitación digital interactiva de matrimonio para Scarlett & Byron — Temática La Bella y la Bestia",
+  "type": "module",
+  "engines": {
+    "node": ">=20.19.0"
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "lint": "oxlint",
+    "assets:optimize": "node scripts/optimize-assets.mjs",
+    "og:generate": "node scripts/generate-og.mjs",
+    "test": "node --test tests/weddingLogic.test.mjs && node tests/seo.test.mjs && node tests/hygiene.test.mjs",
+    "verify": "npm run lint && npm run build && npm test"
+  },
+  "dependencies": {
+    "@tailwindcss/vite": "^4.3.3",
+    "canvas-confetti": "^1.9.4",
+    "framer-motion": "^12.23.24",
+    "lucide-react": "^0.546.0",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "tailwindcss": "^4.3.3"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^6.1.1",
+    "oxlint": "^1.81.0",
+    "sharp": "^0.34.2",
+    "vite": "^8.3.0"
+  }
+}
