@@ -1,0 +1,5 @@
+# Scarlett & Byron — robots.txt generado automáticamente
+User-agent: *
+Allow: /
+
+Sitemap: https://scarlett-byron.vercel.app/sitemap.xml
