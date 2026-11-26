@@ -1,0 +1,75 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 140" fill="none">
+  <defs>
+    <linearGradient id="crownGold" x1="20%" y1="0%" x2="80%" y2="100%">
+      <stop offset="0%" stop-color="#FFF0B8" />
+      <stop offset="28%" stop-color="#E6C26B" />
+      <stop offset="62%" stop-color="#C5983D" />
+      <stop offset="100%" stop-color="#8C631E" />
+    </linearGradient>
+    <linearGradient id="crownBand" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#9A7126" />
+      <stop offset="30%" stop-color="#E7C978" />
+      <stop offset="50%" stop-color="#FFF0BA" />
+      <stop offset="70%" stop-color="#DFB85E" />
+      <stop offset="100%" stop-color="#8C631E" />
+    </linearGradient>
+    <radialGradient id="orbGold" cx="35%" cy="30%" r="70%">
+      <stop offset="0%" stop-color="#FFF6CE" />
+      <stop offset="55%" stop-color="#D9AE4E" />
+      <stop offset="100%" stop-color="#8A601B" />
+    </radialGradient>
+    <radialGradient id="rubyJewel" cx="35%" cy="30%" r="70%">
+      <stop offset="0%" stop-color="#E0434E" />
+      <stop offset="60%" stop-color="#9E1B24" />
+      <stop offset="100%" stop-color="#5E0B11" />
+    </radialGradient>
+  </defs>
+
+  <!-- Main royal five-point crown silhouette -->
+  <path
+    d="M36 105 L18 54 C38 78 58 79 68 38 C76 74 96 76 110 22 C124 76 144 74 152 38 C162 79 182 78 202 54 L184 105 C158 95 134 90 110 90 C86 90 62 95 36 105 Z"
+    fill="url(#crownGold)"
+    stroke="#8A601B"
+    stroke-width="2.5"
+    stroke-linejoin="round"
+  />
+
+  <!-- Inner filigree highlight -->
+  <path
+    d="M44 98 L30 64 C46 82 61 81 69 50 C78 80 98 81 110 35 C122 81 142 80 151 50 C159 81 174 82 190 64 L176 98 C153 89 131 85 110 85 C89 85 67 89 44 98 Z"
+    fill="none"
+    stroke="#FFF3C4"
+    stroke-opacity="0.65"
+    stroke-width="1.8"
+  />
+
+  <!-- Curved regal headband -->
+  <path
+    d="M35 111 C61 100 85 95 110 95 C135 95 159 100 185 111 L180 127 C156 117 133 112 110 112 C87 112 64 117 40 127 Z"
+    fill="url(#crownBand)"
+    stroke="#8A601B"
+    stroke-width="2.4"
+    stroke-linejoin="round"
+  />
+
+  <!-- Band filigree line -->
+  <path
+    d="M44 118 C67 109 88 105 110 105 C132 105 153 109 176 118"
+    stroke="#FFF3C4"
+    stroke-opacity="0.7"
+    stroke-width="1.5"
+    stroke-linecap="round"
+  />
+
+  <!-- Center crimson rose-ruby accent on the band -->
+  <ellipse cx="110" cy="105" rx="6.5" ry="5" fill="url(#rubyJewel)" stroke="#FFF0B8" stroke-width="1.3" />
+  <circle cx="80" cy="108.5" r="3" fill="#FFF2BE" stroke="#9A7126" stroke-width="1" />
+  <circle cx="140" cy="108.5" r="3" fill="#FFF2BE" stroke="#9A7126" stroke-width="1" />
+
+  <!-- Golden pearls / finials atop the five points -->
+  <circle cx="110" cy="16" r="10" fill="url(#orbGold)" stroke="#8A601B" stroke-width="2" />
+  <path d="M68 22 C63 31 63 38 68 42 C73 38 73 31 68 22 Z" fill="url(#orbGold)" stroke="#8A601B" stroke-width="1.8" />
+  <path d="M152 22 C147 31 147 38 152 42 C157 38 157 31 152 22 Z" fill="url(#orbGold)" stroke="#8A601B" stroke-width="1.8" />
+  <circle cx="16" cy="50" r="7.5" fill="url(#orbGold)" stroke="#8A601B" stroke-width="1.8" />
+  <circle cx="204" cy="50" r="7.5" fill="url(#orbGold)" stroke="#8A601B" stroke-width="1.8" />
+</svg>
