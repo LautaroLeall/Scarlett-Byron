@@ -83,20 +83,35 @@ test('normalizeMatchKey unifica tildes, mayúsculas y espacios extra para anti-d
   assert.equal(normalizeMatchKey('Vivir Mi VíDA'), normalizeMatchKey('vivir mi vida'));
 });
 
-test('normalizeCompanions maneja cadenas vacías, textos inválidos y límites', () => {
-  assert.equal(normalizeCompanions('', 10), 0);
-  assert.equal(normalizeCompanions('abc', 10), 0);
-  assert.equal(normalizeCompanions(-3, 10), 0);
-  assert.equal(normalizeCompanions('4', 10), 4);
-  assert.equal(normalizeCompanions('99', 10), 10);
+test('normalizeCompanions maneja cadenas vacías, textos inválidos y tope estricto de 2 acompañantes', () => {
+  assert.equal(normalizeCompanions('', 2), 0);
+  assert.equal(normalizeCompanions('abc', 2), 0);
+  assert.equal(normalizeCompanions(-3, 2), 0);
+  assert.equal(normalizeCompanions('2', 2), 2);
+  assert.equal(normalizeCompanions('3'), 2);
+  assert.equal(normalizeCompanions('99', 2), 2);
 });
 
-test('validateRsvpForm exige nombre completo del titular y de cada acompañante y rechaza datos inválidos', () => {
+test('validateRsvpForm exige nombre completo, bloquea más de 2 acompañantes y rechaza datos inválidos', () => {
   assert.equal(validateRsvpForm({ guestName: '   ', attending: true, companions: 0 }).valid, false);
   assert.equal(validateRsvpForm({ guestName: 'Camila', attending: true, companions: 0 }).valid, false);
   assert.equal(validateRsvpForm({ guestName: 'Aaaa Bbbb', attending: true, companions: 0 }).valid, false);
   assert.equal(validateRsvpForm({ guestName: 'Juan 123', attending: true, companions: 0 }).valid, false);
-  assert.equal(validateRsvpForm({ guestName: 'Valentina Gómez', attending: true, companions: 25 }, 10).valid, false);
+  assert.equal(validateRsvpForm({ guestName: 'Valentina Gómez', attending: true, companions: -1 }, 2).valid, false);
+
+  // Máximo estricto de 2 acompañantes: 3 acompañantes aunque tengan nombres válidos debe rechazarse
+  const overMaxCompanions = validateRsvpForm(
+    {
+      guestName: 'Valentina Gómez',
+      attending: true,
+      companions: 3,
+      companionNames: ['Martín González', 'Sofía Díaz', 'Lucas Pérez'],
+    },
+    2
+  );
+  assert.equal(overMaxCompanions.valid, false);
+  assert.match(overMaxCompanions.errors.companions || '', /máximo 2 acompañantes/i);
+
   assert.equal(
     validateRsvpForm({ guestName: 'Valentina Gómez', attending: true, companions: 0, message: 'x'.repeat(261) }).valid,
     false
@@ -224,10 +239,14 @@ test('parseStoredRsvp y parseStoredSongs resisten JSON corrupto, registros legad
   assert.deepEqual(okRsvp?.companionNames, ['Juan Pérez', 'Ana Silva']);
   assert.equal(okRsvp?.action, 'updated');
 
-  // Registro legado guardado antes de agregar companionNames no rompe
-  const legacyRsvp = parseStoredRsvp('{"guestName":"Carlos Soto","attending":true,"companions":1}');
-  assert.equal(legacyRsvp?.guestName, 'Carlos Soto');
-  assert.deepEqual(legacyRsvp?.companionNames, []);
+  // Registro legado con más de 2 acompañantes se acota automáticamente al máximo permitido (2)
+  const cappedRsvp = parseStoredRsvp(
+    '{"guestName":"Carlos Soto","attending":true,"companions":4,"companionNames":["Uno Apellido","Dos Apellido","Tres Apellido"]}',
+    2
+  );
+  assert.equal(cappedRsvp?.guestName, 'Carlos Soto');
+  assert.equal(cappedRsvp?.companions, 2);
+  assert.deepEqual(cappedRsvp?.companionNames, ['Uno Apellido', 'Dos Apellido']);
 
   assert.deepEqual(parseStoredSongs('{roto'), []);
   assert.deepEqual(parseStoredSongs('{"no":"array"}'), []);
@@ -358,6 +377,26 @@ test('driveSheets envía upsert RSVP con acompañantes, bloquea música anónima
   assert.deepEqual(sentBody.companionNames, ['Pedro Soto', 'Lucía Díaz']);
   assert.equal('dietNotes' in sentBody, false);
 
+  // Envío que intenta exceder el máximo de 2 acompañantes se acota a 2 antes de enviar
+  let cappedBody = null;
+  await submitRsvpToDrive(
+    {
+      guestName: 'María Gómez',
+      attending: true,
+      companions: 5,
+      companionNames: ['Pedro Soto', 'Lucía Díaz', 'Extra Tres'],
+    },
+    {
+      webhookUrl: 'https://script.google.com/macros/s/DEMO/exec',
+      fetchImpl: async (_url, init) => {
+        cappedBody = JSON.parse(init.body);
+        return { ok: true, text: async () => JSON.stringify({ ok: true, action: 'updated' }) };
+      },
+    }
+  );
+  assert.equal(cappedBody.companions, 2);
+  assert.deepEqual(cappedBody.companionNames, ['Pedro Soto', 'Lucía Díaz']);
+
   // Cuando attending=false limpia acompañantes antes de enviar
   let declinedBody = null;
   await submitRsvpToDrive(
@@ -486,6 +525,9 @@ test('resolveSiteUrl y renderSeoHtml inyectan URLs absolutas HTTPS y JSON-LD Eve
 
 test('weddingData mantiene integridad completa de datos reales, versionado anti-caché y archivos físicos', () => {
   assert.equal(WEDDING_DETAILS.rsvp.deadline, '15 de enero');
+  assert.equal(WEDDING_DETAILS.rsvp.maxGuests, 2);
+  assert.ok(WEDDING_DETAILS.rsvp.adultsOnlyNotice.includes('solo para adultos'));
+  assert.ok(WEDDING_DETAILS.rsvp.adultsOnlySubnote.length > 20);
   assert.equal(WEDDING_DETAILS.timezone, 'America/Santiago');
   assert.equal(WEDDING_DETAILS.gifts.entity, 'Banco Falabella');
   assert.equal(WEDDING_DETAILS.gifts.rut, '19.186.908-7');
