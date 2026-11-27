@@ -23,17 +23,18 @@ function OrnatePortraitFrame({ className = '' }) {
       <div
         className="absolute z-0 overflow-hidden rounded-[50%] bg-royal-900 shadow-inner"
         style={{
-          left: '16%',
-          top: '14.5%',
-          width: '68%',
-          height: '70%',
+          left: '17.8%',
+          top: '15.6%',
+          width: '65.2%',
+          height: '64.6%',
         }}
       >
         <ResilientImage
           src={IMAGES.coupleHero}
-          alt={`${WEDDING_DETAILS.coupleNames} en su sesión fotográfica`}
+          alt={`${WEDDING_DETAILS.coupleNames} besándose con las manos entrelazadas`}
           loading="eager"
-          className="w-full h-full object-cover object-center transition-transform duration-700 ease-out hover:scale-105"
+          style={{ objectPosition: '50% 50%' }}
+          className="w-full h-full object-cover transition-transform duration-700 ease-out hover:scale-105"
         />
       </div>
 

@@ -15,7 +15,7 @@ export function DressCodeCard() {
       viewport={{ once: true, amount: 'some' }}
       transition={{ duration: 0.55, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
       whileHover={{ y: -3 }}
-      className="enchanted-card md:col-span-5 w-full bg-surface-container border border-outline rounded-2xl p-5 sm:p-6 flex flex-col justify-between gap-4 overflow-hidden"
+      className="enchanted-card md:col-span-5 w-full bg-surface-container border border-outline rounded-2xl p-5 sm:p-6 flex flex-col gap-4 overflow-hidden"
     >
       <span
         aria-hidden="true"
