@@ -95,7 +95,12 @@ export async function postToDriveSheet(
 
 export function submitRsvpToDrive(record, options) {
   const attending = Boolean(record.attending);
-  const companions = attending ? Number(record.companions) || 0 : 0;
+  const maxGuests = WEDDING_DETAILS.rsvp?.maxGuests ?? 2;
+  const parsedCompanions = Number(record.companions);
+  const companions =
+    attending && Number.isFinite(parsedCompanions)
+      ? Math.max(0, Math.min(maxGuests, Math.trunc(parsedCompanions)))
+      : 0;
   const companionNames =
     attending && companions > 0 && Array.isArray(record.companionNames)
       ? record.companionNames.slice(0, companions)
