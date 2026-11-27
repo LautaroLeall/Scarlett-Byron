@@ -54,7 +54,12 @@ Abre tu URL `https://script.google.com/macros/s/.../exec` en el navegador. Debe 
   "ok": true,
   "service": "scarlett-byron-wedding-sheets",
   "status": "ready",
-  "features": ["upsert-rsvp", "verified-guest-songs", "auto-filters"]
+  "features": [
+    "upsert-rsvp",
+    "required-companion-names",
+    "verified-guest-songs",
+    "auto-filters"
+  ]
 }
 ```
 
