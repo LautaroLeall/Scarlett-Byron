@@ -1,12 +1,13 @@
-import { useState } from 'react';
-import { motion, AnimatePresence, MotionConfig } from 'framer-motion';
-import { Sparkles } from 'lucide-react';
-import { WEDDING_DETAILS } from './data/weddingData.js';
+import { useRef, useState } from 'react';
+import { motion, AnimatePresence, MotionConfig, useScroll, useTransform } from 'framer-motion';
+import { IMAGES, NAV_SECTIONS, WEDDING_DETAILS } from './data/weddingData.js';
 import { parseStoredRsvp } from './utils/weddingLogic.js';
 import { useAudioPlayer } from './hooks/useAudioPlayer.js';
+import { useActiveSection } from './hooks/useActiveSection.js';
 import { ErrorBoundary } from './components/ErrorBoundary.jsx';
 import { EnvelopeGate } from './components/EnvelopeGate.jsx';
 import { InvitationHeader } from './components/InvitationHeader.jsx';
+import { RoyalScrollRail } from './components/RoyalScrollRail.jsx';
 import { HeroSection } from './components/HeroSection.jsx';
 import { EventLocationsSection } from './components/EventLocationsSection.jsx';
 import { StoryGallery } from './components/StoryGallery.jsx';
@@ -17,6 +18,7 @@ import { SongSuggestionCard } from './components/SongSuggestionCard.jsx';
 import { ClosingFooter } from './components/ClosingFooter.jsx';
 import { FloatingAudioButton } from './components/FloatingAudioButton.jsx';
 import { FloatingPetals } from './components/FloatingPetals.jsx';
+import { BaroqueDivider, CornerRoses, GoldButterfly } from './components/RoyalOrnaments.jsx';
 
 function getInitialViewMode() {
   if (typeof window !== 'undefined') {
@@ -45,11 +47,36 @@ function scrollToTopNow() {
   window.scrollTo(0, 0);
 }
 
+function ScrollParallaxOrnaments({ targetRef, children }) {
+  const { scrollYProgress } = useScroll({
+    target: targetRef,
+    offset: ['start end', 'end start'],
+  });
+  const driftY = useTransform(scrollYProgress, [0, 1], [-22, 26]);
+  const gentleRotate = useTransform(scrollYProgress, [0, 1], [-4, 5]);
+
+  return (
+    <motion.div
+      aria-hidden="true"
+      style={{ y: driftY, rotate: gentleRotate }}
+      className="pointer-events-none absolute inset-0"
+    >
+      {children}
+    </motion.div>
+  );
+}
+
+const SECTION_IDS = NAV_SECTIONS.map((section) => section.id);
+
 export default function App() {
   const [viewMode, setViewMode] = useState(getInitialViewMode);
   const [envelopeOpened, setEnvelopeOpened] = useState(false);
   const [savedRsvp, setSavedRsvp] = useState(loadInitialRsvp);
   const { isPlaying, play, pause, togglePlay } = useAudioPlayer(WEDDING_DETAILS.audio.src);
+  const { activeSection, selectSection } = useActiveSection(SECTION_IDS);
+  const ceremonyRef = useRef(null);
+  const storyRef = useRef(null);
+  const confirmRef = useRef(null);
 
   const handleRsvpSaved = (record) => {
     setSavedRsvp(record);
@@ -61,6 +88,7 @@ export default function App() {
   };
 
   const handleFocusRsvpForm = () => {
+    selectSection('confirmar');
     if (typeof document === 'undefined') return;
     const input = document.getElementById('rsvp-guest-name');
     const section = document.getElementById('confirmar');
@@ -85,6 +113,7 @@ export default function App() {
 
   const handleEnterInvitation = () => {
     if (!isPlaying) play();
+    selectSection('portada');
     setViewMode('invitation');
     scrollToTopNow();
   };
@@ -92,6 +121,7 @@ export default function App() {
   const handleEnterSilent = () => {
     pause();
     setEnvelopeOpened(false);
+    selectSection('portada');
     setViewMode('invitation');
     scrollToTopNow();
   };
@@ -119,71 +149,133 @@ export default function App() {
           ) : (
             <motion.div
               key="invitation-main"
-              initial={{ opacity: 0, y: 14 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
-              className="relative min-h-dvh w-full bg-ivory-200/45 text-on-surface flex flex-col"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.4, ease: 'easeOut' }}
+              className="relative min-h-dvh w-full text-on-surface flex flex-col"
             >
               <FloatingPetals />
-              <InvitationHeader onShowEnvelope={handleShowEnvelope} />
+              <InvitationHeader
+                activeSection={activeSection}
+                onSelectSection={selectSection}
+                onShowEnvelope={handleShowEnvelope}
+              />
 
-              <main className="relative z-10 w-full max-w-5xl mx-auto flex-1 bg-ivory-100/95 border-x border-outline-variant px-4 sm:px-8 lg:px-12 pb-[max(5.5rem,calc(5rem+env(safe-area-inset-bottom)))] shadow-[0_0_40px_rgba(44,36,30,0.06)]">
+              <main className="parchment-sheet relative z-10 w-full max-w-5xl mx-auto flex-1 border-x border-gold/45 overflow-x-clip pb-[max(5.5rem,calc(4.5rem+env(safe-area-inset-bottom)))] shadow-[0_0_64px_rgba(4,10,24,0.65)]">
                 <HeroSection isPlaying={isPlaying} onToggleMusic={togglePlay} />
 
+                {/* Capítulo 2: Ceremonia y Recepción (entrada y cierre independientes) */}
                 <section
+                  ref={ceremonyRef}
                   id="ceremonia"
-                  aria-label="Ceremonia, Historia y Dress Code"
-                  className="w-full flex flex-col gap-7 sm:gap-9 py-10 sm:py-14 border-t border-outline-variant scroll-mt-16"
+                  aria-label="Ceremonia y Recepción"
+                  className="relative w-full overflow-hidden flex flex-col gap-7 sm:gap-9 px-4 sm:px-8 lg:px-12 py-12 sm:py-16 scroll-mt-16"
                 >
-                  <EventLocationsSection />
+                  <ScrollParallaxOrnaments targetRef={ceremonyRef}>
+                    <CornerRoses position="tl" className="w-24 sm:w-32 opacity-30" />
+                    <img
+                      src={IMAGES.goldRoses}
+                      alt=""
+                      aria-hidden="true"
+                      loading="lazy"
+                      decoding="async"
+                      className="pointer-events-none select-none hidden md:block absolute top-10 -right-8 w-28 opacity-20 rotate-12 object-contain"
+                    />
+                  </ScrollParallaxOrnaments>
 
-                  <div
-                    id="historia"
-                    className="grid grid-cols-1 md:grid-cols-12 gap-5 sm:gap-6 items-stretch scroll-mt-20"
-                  >
-                    <StoryGallery />
-                    <DressCodeCard />
+                  <div className="relative z-10 w-full">
+                    <EventLocationsSection />
                   </div>
                 </section>
 
+                {/* Capítulo 3: Nuestra Historia y Dress Code (sección hermana independiente) */}
                 <section
-                  id="confirmar"
-                  aria-label="Confirmación, Regalos y Cierre"
-                  className="w-full flex flex-col gap-7 sm:gap-9 pt-10 sm:pt-14 pb-12 border-t border-outline-variant scroll-mt-16"
+                  ref={storyRef}
+                  id="historia"
+                  aria-label="Historia y Código de Vestimenta"
+                  className="relative w-full overflow-hidden flex flex-col gap-7 sm:gap-9 px-4 sm:px-8 lg:px-12 py-12 sm:py-16 border-t border-gold/45 scroll-mt-16"
                 >
+                  <ScrollParallaxOrnaments targetRef={storyRef}>
+                    <CornerRoses position="bl" className="w-24 sm:w-32 opacity-26" />
+                    <GoldButterfly
+                      flip
+                      className="hidden sm:block absolute top-9 right-8 w-10 opacity-60"
+                    />
+                  </ScrollParallaxOrnaments>
+
                   <motion.header
                     initial={{ opacity: 0, y: 18 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true, amount: 'some' }}
                     transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-                    className="flex flex-col items-center text-center gap-2.5"
+                    className="relative z-10 flex flex-col items-center text-center gap-2.5"
                   >
-                    <h2 className="font-headline text-[22px] sm:text-[26px] leading-7.5 tracking-[1.4px] font-semibold text-ink uppercase">
-                      Confirmación y Detalles
+                    <span className="font-label text-[11px] leading-4 tracking-[1.8px] font-semibold uppercase text-crimson">
+                      Recuerdos y Etiqueta
+                    </span>
+                    <h2 className="font-headline text-[22px] sm:text-[26px] leading-7.5 tracking-[1.4px] font-semibold text-royal-900 uppercase">
+                      Historia y Vestimenta
                     </h2>
-                    <div className="w-full max-w-md flex items-center justify-center gap-4" aria-hidden="true">
-                      <span className="h-px flex-1 bg-linear-to-r from-transparent via-outline to-outline-variant" />
-                      <Sparkles className="w-4 h-4 text-primary" />
-                      <span className="h-px flex-1 bg-linear-to-l from-transparent via-outline to-outline-variant" />
-                    </div>
+                    <BaroqueDivider />
                   </motion.header>
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-5 sm:gap-6 items-start">
-                    <RsvpFormCard savedRsvp={savedRsvp} onRsvpSaved={handleRsvpSaved} />
-                    <div className="flex flex-col gap-5 sm:gap-6">
+                  <div className="relative z-10 grid grid-cols-1 md:grid-cols-12 gap-5 sm:gap-6 items-stretch">
+                    <StoryGallery />
+                    <DressCodeCard />
+                  </div>
+                </section>
+
+                {/* Capítulo 4: Confirmación, Regalos, Música y Cierre */}
+                <section
+                  ref={confirmRef}
+                  id="confirmar"
+                  aria-label="Confirmación, Regalos y Cierre"
+                  className="relative w-full overflow-hidden flex flex-col gap-7 sm:gap-9 px-4 sm:px-8 lg:px-12 pt-12 sm:pt-16 pb-8 border-t border-gold/45 scroll-mt-16"
+                >
+                  <ScrollParallaxOrnaments targetRef={confirmRef}>
+                    <CornerRoses position="tr" className="w-24 sm:w-32 opacity-28" />
+                    <GoldButterfly className="hidden sm:block absolute top-8 left-8 w-10 opacity-65" />
+                  </ScrollParallaxOrnaments>
+
+                  <motion.header
+                    initial={{ opacity: 0, y: 18 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true, amount: 'some' }}
+                    transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+                    className="relative z-10 flex flex-col items-center text-center gap-2.5"
+                  >
+                    <span className="font-label text-[11px] leading-4 tracking-[1.8px] font-semibold uppercase text-crimson">
+                      Tu lugar en nuestro cuento
+                    </span>
+                    <h2 className="font-headline text-[22px] sm:text-[26px] leading-7.5 tracking-[1.4px] font-semibold text-royal-900 uppercase">
+                      Confirmación y Detalles
+                    </h2>
+                    <BaroqueDivider />
+                  </motion.header>
+
+                  <div className="relative z-10 flex flex-col gap-6 sm:gap-7">
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-7 items-stretch">
+                      <RsvpFormCard savedRsvp={savedRsvp} onRsvpSaved={handleRsvpSaved} />
                       <GiftsCard />
-                      <SongSuggestionCard
-                        savedRsvp={savedRsvp}
-                        onGoToRsvp={handleFocusRsvpForm}
-                      />
                     </div>
+
+                    <SongSuggestionCard
+                      savedRsvp={savedRsvp}
+                      onGoToRsvp={handleFocusRsvpForm}
+                    />
                   </div>
 
-                  <ClosingFooter onShowEnvelope={handleShowEnvelope} />
+                  <div className="relative z-10 pt-4">
+                    <ClosingFooter onShowEnvelope={handleShowEnvelope} />
+                  </div>
                 </section>
               </main>
 
+              <RoyalScrollRail
+                activeSection={activeSection}
+                onSelectSection={selectSection}
+              />
               <FloatingAudioButton isPlaying={isPlaying} onToggleMusic={togglePlay} />
             </motion.div>
           )}
