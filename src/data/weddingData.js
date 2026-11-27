@@ -1,18 +1,29 @@
+// Incrementar estas versiones al cambiar música o fotos en public/ para invalidar
+// automáticamente la caché en celulares (iOS Safari, Android Chrome y WhatsApp).
+export const APP_RELEASE_VERSION = '2026-11-26-v5';
+export const ASSET_VERSION = '20261126v5';
+
+export function versionedAsset(assetPath, version = ASSET_VERSION) {
+  if (!assetPath) return '';
+  const clean = String(assetPath).split('?')[0];
+  return `${clean}?v=${encodeURIComponent(version)}`;
+}
+
 export const IMAGES = {
-  crown: '/images/crown.svg',
-  waxSeal: '/images/wax-seal.webp',
-  waxSealCrimson: '/images/wax-seal-crimson.webp',
-  castleBg: '/images/castle-bg.webp',
-  rosesCorner: '/images/roses-corner.webp',
-  goldRoses: '/images/gold-roses.webp',
-  butterflyGold: '/images/butterfly-gold.webp',
-  coupleHero: '/images/couple-hero.webp',
-  enchantedRose: '/images/enchanted-rose.webp',
-  baroqueRoseFrame: '/images/baroque-frame.webp',
-  dancingSilhouette: '/images/dancing-silhouette.webp',
-  lumiere: '/images/lumiere.webp',
-  cogsworth: '/images/cogsworth.webp',
-  chip: '/images/chip.webp',
+  crown: versionedAsset('/images/crown.svg'),
+  waxSeal: versionedAsset('/images/wax-seal.webp'),
+  waxSealCrimson: versionedAsset('/images/wax-seal-crimson.webp'),
+  castleBg: versionedAsset('/images/castle-bg.webp'),
+  rosesCorner: versionedAsset('/images/roses-corner.webp'),
+  goldRoses: versionedAsset('/images/gold-roses.webp'),
+  butterflyGold: versionedAsset('/images/butterfly-gold.webp'),
+  coupleHero: versionedAsset('/images/couple-hero.webp'),
+  enchantedRose: versionedAsset('/images/enchanted-rose.webp'),
+  baroqueRoseFrame: versionedAsset('/images/baroque-frame.webp'),
+  dancingSilhouette: versionedAsset('/images/dancing-silhouette.webp'),
+  lumiere: versionedAsset('/images/lumiere.webp'),
+  cogsworth: versionedAsset('/images/cogsworth.webp'),
+  chip: versionedAsset('/images/chip.webp'),
 };
 
 export const NAV_SECTIONS = [
@@ -24,22 +35,53 @@ export const NAV_SECTIONS = [
 
 export const GALLERY_PHOTOS = [
   {
-    id: 'rose-garden',
-    src: '/images/gallery-1.webp',
-    alt: 'Scarlett y Byron caminando bajo un arco de rosas',
-    caption: 'Un capítulo más de nuestra historia capturada para siempre',
+    id: 'palm-embrace',
+    src: versionedAsset('/images/gallery-1.webp'),
+    alt: 'Scarlett sonriendo mientras Byron la abraza y besa su mejilla bajo las palmeras',
+    caption: 'Nuestro amor capturado para siempre',
+    position: '50% 34%',
   },
   {
-    id: 'candlelight',
-    src: '/images/gallery-2.webp',
-    alt: 'Scarlett y Byron sonriendo juntos a la luz de las velas',
-    caption: 'Un capítulo más de nuestra historia capturada para siempre',
+    id: 'sunlit-hug',
+    src: versionedAsset('/images/gallery-2.webp'),
+    alt: 'Scarlett y Byron abrazados y sonriendo entre los árboles iluminados por el sol',
+    caption: 'Tu abrazo, mi lugar favorito',
+    position: '50% 16%',
   },
   {
-    id: 'sunset-dance',
-    src: '/images/gallery-3.webp',
-    alt: 'Scarlett y Byron bailando al atardecer',
-    caption: 'Un capítulo más de nuestra historia capturada para siempre',
+    id: 'garden-gaze',
+    src: versionedAsset('/images/gallery-3.webp'),
+    alt: 'Scarlett mirando con ternura a Byron tomados de la mano en el jardín',
+    caption: 'Miradas que lo dicen todo',
+    position: '50% 8%',
+  },
+  {
+    id: 'stone-steps',
+    src: versionedAsset('/images/gallery-4.webp'),
+    alt: 'Scarlett y Byron sentados juntos mirando hacia el horizonte',
+    caption: 'Juntos mirando hacia nuestro futuro',
+    position: '50% 0%',
+  },
+  {
+    id: 'sky-hands',
+    src: versionedAsset('/images/gallery-5.webp'),
+    alt: 'Scarlett y Byron tomados de la mano y besándose bajo el cielo azul',
+    caption: 'Tomados de la mano bajo el mismo cielo',
+    position: '50% 42%',
+  },
+  {
+    id: 'palm-bliss',
+    src: versionedAsset('/images/gallery-6.webp'),
+    alt: 'Byron abrazando y besando en la mejilla a Scarlett con los ojos cerrados bajo las palmeras',
+    caption: 'La paz de tenerte siempre cerca',
+    position: '50% 34%',
+  },
+  {
+    id: 'golden-kiss',
+    src: versionedAsset('/images/gallery-7.webp'),
+    alt: 'Scarlett rodeando el cuello de Byron en un beso lleno de amor',
+    caption: 'Un capítulo más de nuestra historia',
+    position: '35% 0%',
   },
 ];
 
@@ -59,7 +101,7 @@ export const WEDDING_DETAILS = {
     // En Vercel se detecta automáticamente con VERCEL_PROJECT_PRODUCTION_URL o VITE_SITE_URL.
     siteUrl: 'https://scarlett-byron.vercel.app',
     ogImagePath: '/og-image.jpg',
-    ogVersion: '4',
+    ogVersion: '5',
     title: 'Scarlett & Byron — Invitación de Matrimonio',
     ogTitle: 'Scarlett & Byron — Nuestro Matrimonio',
     siteName: 'Matrimonio de Scarlett & Byron',
@@ -73,7 +115,7 @@ export const WEDDING_DETAILS = {
     lang: 'es-CL',
   },
   audio: {
-    src: '/audio/cancion.mp3',
+    src: versionedAsset('/audio/cancion.mp3'),
     title: 'Young and Beautiful — Lana Del Rey',
   },
   ceremony: {
