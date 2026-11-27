@@ -18,8 +18,8 @@ export class ErrorBoundary extends Component {
     }
 
     return (
-      <div className="min-h-dvh w-full bg-ivory-100 text-ink flex items-center justify-center p-6">
-        <div className="max-w-sm w-full bg-surface-container border border-outline rounded-2xl p-6 text-center shadow-sm flex flex-col items-center gap-4">
+      <div className="min-h-dvh w-full bg-royal-950 text-ink flex items-center justify-center p-6">
+        <div className="max-w-sm w-full bg-surface-container border border-outline rounded-2xl p-6 text-center shadow-lg flex flex-col items-center gap-4">
           <Sparkles className="w-7 h-7 text-primary" aria-hidden="true" />
           <h1 className="font-display text-[36px] leading-10 text-ink">
             {WEDDING_DETAILS.coupleNames}
