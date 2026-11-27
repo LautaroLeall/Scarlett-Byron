@@ -1,29 +1,37 @@
 @import "tailwindcss";
+@import "./styles/animations.css";
 
 @theme {
+  /* Paleta Pergamino, Dorado Real, Carmesí y Azul Medianoche (La Bella y la Bestia) */
   --color-ivory-50: #FDFBF7;
   --color-ivory-100: #F8F2E4;
   --color-ivory-200: #EFE3CA;
-  --color-gold-light: #E3C685;
-  --color-gold: #C5A059;
-  --color-gold-dark: #96712C;
+  --color-champagne: #F8E8BE;
+  --color-gold-light: #E8CC88;
+  --color-gold: #C8A152;
+  --color-gold-dark: #946E27;
+  --color-royal-950: #091329;
+  --color-royal-900: #112247;
+  --color-royal-800: #1B3468;
+  --color-royal-700: #284B8E;
+  --color-royal-200: #C9D8F2;
   --color-crimson: #9E1B24;
-  --color-crimson-dark: #721017;
-  --color-ink: #2C241E;
-  --color-ink-muted: #6E6259;
-  --color-primary: #96712C;
-  --color-on-primary: #070707;
+  --color-crimson-dark: #6E0F16;
+  --color-ink: #2B211B;
+  --color-ink-muted: #6A5D54;
+  --color-primary: #946E27;
+  --color-on-primary: #0B0907;
   --color-secondary: #9E1B24;
   --color-on-secondary: #FFFFFF;
-  --color-surface: #F8F2E4;
+  --color-surface: #0D1A36;
   --color-surface-container: #FDFBF7;
   --color-surface-container-low: #FAF5EA;
   --color-surface-container-high: #EFE3CA;
-  --color-on-surface: #2C241E;
-  --color-on-surface-variant: #6E6259;
-  --color-outline: #C5A059;
-  --color-outline-variant: #E3C685;
-  --color-success: #2D6A4F;
+  --color-on-surface: #2B211B;
+  --color-on-surface-variant: #6A5D54;
+  --color-outline: #C8A152;
+  --color-outline-variant: #E5CA8D;
+  --color-success: #256448;
   --color-on-success: #FFFFFF;
   --color-error: #9E1B24;
   --color-on-error: #FFFFFF;
@@ -38,16 +46,52 @@
 @layer base {
   html {
     scroll-behavior: smooth;
-    background-color: var(--color-surface);
+    background-color: var(--color-royal-950);
     color: var(--color-on-surface);
     font-family: var(--font-body);
     overflow-x: clip;
+    scrollbar-width: thin;
+    scrollbar-color: #C8A152 #091329;
+  }
+
+  /* Barra de scroll personalizada con estilo Real (Azul Medianoche, Dorado y Carmesí) */
+  ::-webkit-scrollbar {
+    width: 11px;
+    height: 11px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: linear-gradient(180deg, #071022 0%, #0F2042 50%, #071022 100%);
+    border-left: 1px solid rgba(200, 161, 82, 0.24);
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, #F8E8BE 0%, #C8A152 48%, #9E1B24 100%);
+    border-radius: 999px;
+    border: 2px solid #091329;
+    box-shadow: inset 0 0 6px rgba(255, 250, 232, 0.55);
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(180deg, #FFF3CE 0%, #E8CC88 45%, #B8212E 100%);
+    border-color: #112247;
+  }
+
+  ::-webkit-scrollbar-thumb:active {
+    background: linear-gradient(180deg, #E8CC88 0%, #9E1B24 100%);
+  }
+
+  ::-webkit-scrollbar-corner {
+    background: #091329;
   }
 
   body {
     margin: 0;
     min-height: 100dvh;
-    background-color: var(--color-surface);
+    background-color: var(--color-royal-950);
+    background-image:
+      radial-gradient(ellipse 85% 45% at 50% 0%, rgba(40, 75, 142, 0.45), transparent 70%),
+      linear-gradient(180deg, #0A1429 0%, #12254C 48%, #0A1429 100%);
     color: var(--color-on-surface);
     overflow-x: clip;
     -webkit-font-smoothing: antialiased;
@@ -81,14 +125,34 @@
   }
 }
 
+/* Textura sutil de pergamino iluminado para el cuerpo de la invitación */
+.parchment-sheet {
+  background-color: #F9F3E6;
+  background-image:
+    radial-gradient(ellipse 90% 35% at 50% 0%, rgba(232, 204, 136, 0.24), transparent 70%),
+    radial-gradient(circle at 12% 38%, rgba(158, 27, 36, 0.045), transparent 34%),
+    radial-gradient(circle at 88% 68%, rgba(27, 52, 104, 0.06), transparent 38%);
+}
+
+/* Panel cristalino azul real con brillo dorado */
+.royal-glass {
+  background: linear-gradient(155deg, rgba(17, 34, 71, 0.9) 0%, rgba(10, 20, 41, 0.94) 100%);
+  border: 1px solid rgba(232, 204, 136, 0.42);
+  box-shadow:
+    0 18px 42px -12px rgba(4, 10, 24, 0.62),
+    inset 0 1px 0 rgba(248, 232, 190, 0.22);
+}
+
 /* Botón primario dorado metálico con barrido de brillo */
 .btn-gold {
   position: relative;
   overflow: hidden;
-  background-image: linear-gradient(180deg, #E7CD92 0%, #C5A059 100%);
-  border: 1px solid #96712C;
-  color: #2C241E;
-  box-shadow: 0 2px 6px rgba(150, 113, 44, 0.18), inset 0 1px 0 rgba(253, 251, 247, 0.55);
+  background-image: linear-gradient(180deg, #F0D898 0%, #CCA454 55%, #B58A38 100%);
+  border: 1px solid #8D6721;
+  color: #241912;
+  box-shadow:
+    0 4px 12px rgba(148, 110, 39, 0.26),
+    inset 0 1px 0 rgba(255, 249, 230, 0.72);
   transition: transform 180ms cubic-bezier(0.16, 1, 0.3, 1),
     box-shadow 180ms ease,
     filter 180ms ease,
@@ -99,23 +163,25 @@
   content: "";
   position: absolute;
   inset: 0;
-  transform: translateX(-110%) skewX(-18deg);
+  transform: translateX(-115%) skewX(-18deg);
   background: linear-gradient(90deg,
       transparent 0%,
-      rgba(253, 251, 247, 0.48) 50%,
+      rgba(255, 250, 235, 0.58) 50%,
       transparent 100%);
-  transition: transform 600ms cubic-bezier(0.16, 1, 0.3, 1);
+  transition: transform 620ms cubic-bezier(0.16, 1, 0.3, 1);
   pointer-events: none;
 }
 
 @media (hover: hover) and (pointer: fine) {
   .btn-gold:hover {
-    box-shadow: 0 6px 16px rgba(150, 113, 44, 0.28), inset 0 1px 0 rgba(253, 251, 247, 0.7);
-    filter: brightness(1.03);
+    box-shadow:
+      0 8px 20px rgba(148, 110, 39, 0.36),
+      inset 0 1px 0 rgba(255, 251, 238, 0.85);
+    filter: brightness(1.04);
   }
 
   .btn-gold:hover::after {
-    transform: translateX(130%) skewX(-18deg);
+    transform: translateX(135%) skewX(-18deg);
   }
 }
 
@@ -123,12 +189,38 @@
   transform: scale(0.97);
 }
 
+/* Botón secundario azul real con marco dorado */
+.btn-royal {
+  background-image: linear-gradient(180deg, #1E3A73 0%, #112247 100%);
+  border: 1px solid rgba(232, 204, 136, 0.55);
+  color: #FDFBF7;
+  box-shadow:
+    0 4px 14px rgba(9, 19, 41, 0.32),
+    inset 0 1px 0 rgba(248, 232, 190, 0.25);
+  transition: transform 180ms cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 180ms ease,
+    filter 180ms ease,
+    border-color 180ms ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .btn-royal:hover {
+    border-color: #F0D898;
+    filter: brightness(1.08);
+    box-shadow: 0 8px 20px rgba(9, 19, 41, 0.42);
+  }
+}
+
+.btn-royal:active {
+  transform: scale(0.97);
+}
+
 /* Botón secundario marfil con borde dorado */
 .btn-ivory {
   background-color: #FDFBF7;
-  border: 1px solid #C5A059;
-  color: #2C241E;
-  box-shadow: 0 1px 3px rgba(44, 36, 30, 0.05);
+  border: 1px solid #C8A152;
+  color: #2B211B;
+  box-shadow: 0 2px 6px rgba(17, 34, 71, 0.08);
   transition: background-color 180ms ease,
     border-color 180ms ease,
     transform 180ms cubic-bezier(0.16, 1, 0.3, 1),
@@ -137,9 +229,9 @@
 
 @media (hover: hover) and (pointer: fine) {
   .btn-ivory:hover {
-    background-color: #EFE3CA;
-    border-color: #96712C;
-    box-shadow: 0 4px 12px rgba(150, 113, 44, 0.14);
+    background-color: #F3E6CC;
+    border-color: #946E27;
+    box-shadow: 0 5px 14px rgba(148, 110, 39, 0.18);
   }
 }
 
@@ -147,8 +239,12 @@
   transform: scale(0.97);
 }
 
-/* Tarjetas interactivas */
+/* Tarjetas interactivas de pergamino con acento dorado */
 .enchanted-card {
+  position: relative;
+  box-shadow:
+    0 10px 28px -14px rgba(17, 34, 71, 0.18),
+    inset 0 1px 0 rgba(255, 252, 245, 0.9);
   transition: transform 240ms cubic-bezier(0.16, 1, 0.3, 1),
     box-shadow 240ms ease,
     border-color 240ms ease;
@@ -156,168 +252,34 @@
 
 @media (hover: hover) and (pointer: fine) {
   .enchanted-card:hover {
-    box-shadow: 0 10px 26px -6px rgba(150, 113, 44, 0.16);
+    box-shadow:
+      0 14px 32px -10px rgba(17, 34, 71, 0.24),
+      0 0 0 1px rgba(200, 161, 82, 0.35);
     border-color: #B48A3E;
   }
 }
 
-@keyframes sealPulse {
-
-  0%,
-  100% {
-    transform: scale(1);
-  }
-
-  50% {
-    transform: scale(1.05);
-  }
+/* Perspectiva 3D realista para la solapa del sobre */
+.envelope-stage {
+  perspective: 1400px;
 }
 
-@keyframes sealHalo {
-
-  0%,
-  100% {
-    transform: scale(1);
-    opacity: 0.7;
-  }
-
-  50% {
-    transform: scale(1.13);
-    opacity: 0.18;
-  }
+.preserve-3d {
+  transform-style: preserve-3d;
 }
 
-@keyframes waveBar {
-
-  0%,
-  100% {
-    transform: scaleY(0.32);
-  }
-
-  50% {
-    transform: scaleY(1);
-  }
+.backface-hidden {
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
 }
 
-@keyframes petalFall {
-  0% {
-    transform: translate3d(0, -10vh, 0) rotate(0deg);
-    opacity: 0;
-  }
-
-  12% {
-    opacity: 0.55;
-  }
-
-  85% {
-    opacity: 0.45;
-  }
-
-  100% {
-    transform: translate3d(38px, 105vh, 0) rotate(310deg);
-    opacity: 0;
-  }
+.envelope-flap-3d {
+  transform-origin: top center;
+  transform-style: preserve-3d;
 }
 
-@keyframes candleGlow {
-
-  0%,
-  100% {
-    opacity: 0.45;
-    transform: scale(1);
-  }
-
-  50% {
-    opacity: 0.85;
-    transform: scale(1.09);
-  }
-}
-
-@keyframes pendulumTick {
-
-  0%,
-  100% {
-    transform: rotate(-2.5deg);
-  }
-
-  50% {
-    transform: rotate(2.5deg);
-  }
-}
-
-@keyframes gentleFloat {
-
-  0%,
-  100% {
-    transform: translateY(0px);
-  }
-
-  50% {
-    transform: translateY(-5px);
-  }
-}
-
-.seal-pulse {
-  animation: sealPulse 2.6s ease-in-out infinite;
-}
-
-.seal-halo {
-  animation: sealHalo 2.6s ease-in-out infinite;
-}
-
-.is-playing .wave-bar {
-  animation: waveBar 0.85s ease-in-out infinite;
-  transform-origin: center;
-}
-
-.wave-bar:nth-child(2n) {
-  animation-delay: 0.15s;
-}
-
-.wave-bar:nth-child(3n) {
-  animation-delay: 0.3s;
-}
-
-.wave-bar:nth-child(5n) {
-  animation-delay: 0.45s;
-}
-
-.petal-drift {
-  animation-name: petalFall;
-  animation-timing-function: linear;
-  animation-iteration-count: infinite;
-  will-change: transform, opacity;
-}
-
-.candle-aura {
-  animation: candleGlow 2.8s ease-in-out infinite;
-}
-
-.pendulum-sway {
-  animation: pendulumTick 3.2s ease-in-out infinite;
-  transform-origin: bottom center;
-}
-
-.gentle-float {
-  animation: gentleFloat 3.6s ease-in-out infinite;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  html {
-    scroll-behavior: auto;
-  }
-
-  .seal-pulse,
-  .seal-halo,
-  .is-playing .wave-bar,
-  .petal-drift,
-  .candle-aura,
-  .pendulum-sway,
-  .gentle-float {
-    animation: none;
-  }
-
-  .btn-gold::after {
-    display: none;
-  }
+.envelope-flap-back {
+  transform: rotateX(180deg);
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
 }
