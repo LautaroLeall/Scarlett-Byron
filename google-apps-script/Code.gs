@@ -3,7 +3,7 @@
  *
  * Crea y mantiene automáticamente 4 hojas en Google Drive:
  *  1. Resumen        -> Contadores en vivo (Confirmados, No asisten, Total personas, Canciones)
- *  2. Confirmaciones -> Lista maestra SIN duplicados (actualiza si ya existe), filtro Sí/No y colores
+ *  2. Confirmaciones -> Lista maestra SIN duplicados (actualiza si ya existe), nombres de acompañantes, filtro Sí/No y colores
  *  3. Solo Asisten   -> Vista filtrada automática solo de quienes SÍ van (lista para salón/catering)
  *  4. Musica         -> Playlist filtrable, 0 anónimos (valida que esté en Confirmaciones), 0 duplicados
  *
@@ -51,6 +51,65 @@ function countMeaningfulWords(text) {
     .filter((part) => /[A-Za-zÁÉÍÓÚáéíóúÑñÜü]{2,}/.test(part)).length;
 }
 
+function isValidFullName(name) {
+  if (!name || name.length < 4 || name.length > 80) return false;
+  if (countMeaningfulWords(name) < 2) return false;
+  if (/([A-Za-zÁÉÍÓÚáéíóúÑñÜü])\1{3,}/i.test(name)) return false;
+  return true;
+}
+
+function parseCompanionNames(rawNames, expectedCount, guestName) {
+  let list = [];
+  if (Array.isArray(rawNames)) {
+    list = rawNames.map((item) => sanitizeCell(item, 80));
+  } else if (typeof rawNames === "string" && rawNames.trim()) {
+    list = rawNames
+      .split(/[,;\n]+/)
+      .map((item) => sanitizeCell(item, 80))
+      .filter(Boolean);
+  }
+
+  if (list.length < expectedCount) {
+    return {
+      ok: false,
+      error:
+        "Debes escribir el nombre y apellido completo de cada acompañante.",
+    };
+  }
+
+  const trimmed = list.slice(0, expectedCount);
+  const seen = {};
+  const guestKey = normalizeMatchKey(guestName);
+
+  for (let i = 0; i < trimmed.length; i++) {
+    const compName = trimmed[i];
+    if (!isValidFullName(compName)) {
+      return {
+        ok: false,
+        error: `Revisa el nombre y apellido completo del acompañante ${i + 1}.`,
+      };
+    }
+    const key = normalizeMatchKey(compName);
+    if (key === guestKey) {
+      return {
+        ok: false,
+        error:
+          "No hace falta incluirte en acompañantes; ingresa el nombre de tu acompañante.",
+      };
+    }
+    if (seen[key]) {
+      return {
+        ok: false,
+        error:
+          "Hay nombres de acompañantes repetidos; ingresa cada acompañante una sola vez.",
+      };
+    }
+    seen[key] = true;
+  }
+
+  return { ok: true, formatted: trimmed.join(", ") };
+}
+
 function formatTimestamp(date) {
   return Utilities.formatDate(date, TIMEZONE, "dd/MM/yyyy HH:mm");
 }
@@ -96,7 +155,7 @@ function configureRsvpFormatting(rsvpSheet) {
     "Asiste",
     "Acompañantes",
     "Total Personas",
-    "Restricciones Alimentarias",
+    "Nombres de Acompañantes",
     "Saludo / Mensaje",
     "Estado",
   ]);
@@ -105,7 +164,7 @@ function configureRsvpFormatting(rsvpSheet) {
   rsvpSheet.setColumnWidth(3, 110);
   rsvpSheet.setColumnWidth(4, 125);
   rsvpSheet.setColumnWidth(5, 130);
-  rsvpSheet.setColumnWidth(6, 220);
+  rsvpSheet.setColumnWidth(6, 280);
   rsvpSheet.setColumnWidth(7, 280);
   rsvpSheet.setColumnWidth(8, 120);
 
@@ -149,30 +208,30 @@ function configureSongsFormatting(songsSheet) {
 function writeSummaryRows(ss, summarySheet) {
   const sep = getFormulaSeparator(ss);
   styleHeaderRow(summarySheet, ["Indicador", "Cantidad"]);
+  const lastRow = summarySheet.getLastRow();
+  if (lastRow >= 2) {
+    summarySheet.getRange(2, 1, lastRow - 1, 2).clearContent();
+  }
   summarySheet
-    .getRange(2, 1, 5, 1)
+    .getRange(2, 1, 4, 1)
     .setValues([
       ["Respuestas que SÍ asisten"],
       ["Respuestas que NO asisten"],
       ["Total de personas confirmadas (titulares + acompañantes)"],
-      ["Respuestas con restricciones alimentarias"],
       ["Canciones sugeridas para la fiesta"],
     ]);
   summarySheet
-    .getRange(2, 2, 5, 1)
+    .getRange(2, 2, 4, 1)
     .setFormulas([
       [`=COUNTIF(${SHEET_RSVP}!C2:C${sep}"Sí")`],
       [`=COUNTIF(${SHEET_RSVP}!C2:C${sep}"No")`],
       [`=SUM(${SHEET_RSVP}!E2:E)`],
-      [
-        `=COUNTIFS(${SHEET_RSVP}!C2:C${sep}"Sí"${sep}${SHEET_RSVP}!F2:F${sep}"<>")`,
-      ],
       [`=COUNTA(${SHEET_SONGS}!C2:C)`],
     ]);
   summarySheet.setColumnWidth(1, 380);
   summarySheet.setColumnWidth(2, 140);
   summarySheet
-    .getRange("B2:B6")
+    .getRange("B2:B5")
     .setFontWeight("bold")
     .setHorizontalAlignment("center");
 }
@@ -184,14 +243,14 @@ function writeAttendingView(ss, attendingSheet) {
     "Asiste",
     "Acompañantes",
     "Total Personas",
-    "Restricciones Alimentarias",
+    "Nombres de Acompañantes",
     "Saludo / Mensaje",
   ]);
   attendingSheet.setColumnWidth(1, 230);
   attendingSheet.setColumnWidth(2, 100);
   attendingSheet.setColumnWidth(3, 125);
   attendingSheet.setColumnWidth(4, 130);
-  attendingSheet.setColumnWidth(5, 220);
+  attendingSheet.setColumnWidth(5, 280);
   attendingSheet.setColumnWidth(6, 280);
 
   // Limpia posibles residuos previos y coloca la fórmula dinámica FILTER
@@ -208,16 +267,21 @@ function writeAttendingView(ss, attendingSheet) {
 
 function ensureSheets(ss) {
   let rsvpSheet = ss.getSheetByName(SHEET_RSVP);
+  let schemaUpgraded = false;
+
   if (!rsvpSheet) {
     rsvpSheet = ss.insertSheet(SHEET_RSVP);
     configureRsvpFormatting(rsvpSheet);
   } else if (
     !rsvpSheet.getFilter() ||
     rsvpSheet.getConditionalFormatRules().length === 0 ||
+    String(rsvpSheet.getRange("F1").getValue()).trim() !==
+      "Nombres de Acompañantes" ||
     String(rsvpSheet.getRange("H1").getValue()).trim() !== "Estado"
   ) {
-    // Auto-actualiza hojas creadas en versiones previas sin borrar invitados
+    // Auto-actualiza encabezados, filtro y colores de versiones previas sin borrar invitados
     configureRsvpFormatting(rsvpSheet);
+    schemaUpgraded = true;
   }
 
   let songsSheet = ss.getSheetByName(SHEET_SONGS);
@@ -232,11 +296,19 @@ function ensureSheets(ss) {
   if (!attendingSheet) {
     attendingSheet = ss.insertSheet(SHEET_ATTENDING);
     writeAttendingView(ss, attendingSheet);
+  } else if (
+    schemaUpgraded ||
+    String(attendingSheet.getRange("E1").getValue()).trim() !==
+      "Nombres de Acompañantes"
+  ) {
+    writeAttendingView(ss, attendingSheet);
   }
 
   let summarySheet = ss.getSheetByName(SHEET_SUMMARY);
   if (!summarySheet) {
     summarySheet = ss.insertSheet(SHEET_SUMMARY, 0);
+    writeSummaryRows(ss, summarySheet);
+  } else if (schemaUpgraded) {
     writeSummaryRows(ss, summarySheet);
   }
 
@@ -336,7 +408,12 @@ function doGet() {
     ok: true,
     service: "scarlett-byron-wedding-sheets",
     status: "ready",
-    features: ["upsert-rsvp", "verified-guest-songs", "auto-filters"],
+    features: [
+      "upsert-rsvp",
+      "required-companion-names",
+      "verified-guest-songs",
+      "auto-filters",
+    ],
   });
 }
 
@@ -365,20 +442,11 @@ function doPost(e) {
       const guestName = sanitizeCell(data.guestName, 80);
       const previousGuestName = sanitizeCell(data.previousGuestName, 80);
 
-      if (guestName.length < 4 || countMeaningfulWords(guestName) < 2) {
+      if (!isValidFullName(guestName)) {
         return jsonResponse({
           ok: false,
           code: "INVALID_NAME",
           error: "Ingresa tu nombre y apellido completo para registrarte.",
-        });
-      }
-
-      if (/([A-Za-zÁÉÍÓÚáéíóúÑñÜü])\1{3,}/i.test(guestName)) {
-        return jsonResponse({
-          ok: false,
-          code: "INVALID_NAME",
-          error:
-            "Revisa tu nombre y apellido; parece contener letras repetidas.",
         });
       }
 
@@ -390,9 +458,25 @@ function doPost(e) {
           )
         : 0;
       const totalPeople = attending ? 1 + companions : 0;
-      const dietNotes = attending ? sanitizeCell(data.dietNotes, 160) : "";
-      const message = sanitizeCell(data.message, 260);
 
+      let companionNamesText = "";
+      if (attending && companions > 0) {
+        const compCheck = parseCompanionNames(
+          data.companionNames,
+          companions,
+          guestName,
+        );
+        if (!compCheck.ok) {
+          return jsonResponse({
+            ok: false,
+            code: "INVALID_COMPANIONS",
+            error: compCheck.error,
+          });
+        }
+        companionNamesText = compCheck.formatted;
+      }
+
+      const message = sanitizeCell(data.message, 260);
       const existing = findGuestInRsvp(rsvpSheet, guestName, previousGuestName);
 
       if (existing) {
@@ -405,7 +489,7 @@ function doPost(e) {
               attending ? "Sí" : "No",
               companions,
               totalPeople,
-              dietNotes,
+              companionNamesText,
               message,
               "Actualizado",
             ],
@@ -425,7 +509,7 @@ function doPost(e) {
         attending ? "Sí" : "No",
         companions,
         totalPeople,
-        dietNotes,
+        companionNamesText,
         message,
         "Nuevo",
       ]);

@@ -131,6 +131,32 @@ function checkResponsiveAndDeploy() {
     console.log('  [FALLA] Eliminar archivo temporal public/audio/LEEME.txt antes de producción');
   }
 
+  // Verificar que no haya imágenes huérfanas sin usar en public/images/
+  const imagesDir = path.join(ROOT, 'public/images');
+  if (fs.existsSync(imagesDir)) {
+    const referenceCorpus = [
+      fs.readFileSync(INDEX_HTML, 'utf8'),
+      fs.readFileSync(path.join(ROOT, 'src/data/weddingData.js'), 'utf8'),
+      fs.readFileSync(path.join(ROOT, 'scripts/generate-og.mjs'), 'utf8'),
+    ].join('\n');
+
+    for (const entry of fs.readdirSync(imagesDir, { withFileTypes: true })) {
+      if (!entry.isFile()) continue;
+      if (!referenceCorpus.includes(entry.name)) {
+        fail++;
+        console.log(`  [FALLA] Imagen sin usar en public/images/: ${entry.name}`);
+      }
+    }
+  }
+
+  // Verificar que no queden referencias eliminadas a restricciones alimentarias en src/ ni Code.gs
+  const legacyDietRe = /\bdietNotes\b|Restricciones\s+Alimentarias/i;
+  const codeGs = fs.readFileSync(path.join(ROOT, 'google-apps-script/Code.gs'), 'utf8');
+  if (legacyDietRe.test(codeGs)) {
+    fail++;
+    console.log('  [FALLA] Quedó referencia antigua a restricciones alimentarias en google-apps-script/Code.gs');
+  }
+
   const gitignorePath = path.join(ROOT, '.gitignore');
   if (fs.existsSync(gitignorePath)) {
     const gi = fs.readFileSync(gitignorePath, 'utf8');

@@ -14,7 +14,7 @@
     "lint": "oxlint",
     "assets:optimize": "node scripts/optimize-assets.mjs",
     "og:generate": "node scripts/generate-og.mjs",
-    "test": "node --test tests/weddingLogic.test.mjs && node tests/seo.test.mjs && node tests/hygiene.test.mjs",
+    "test": "node --test tests/weddingLogic.test.mjs tests/appsScript.test.mjs && node tests/seo.test.mjs && node tests/hygiene.test.mjs",
     "verify": "npm run lint && npm run build && npm test"
   },
   "dependencies": {
