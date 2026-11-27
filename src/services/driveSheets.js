@@ -94,14 +94,21 @@ export async function postToDriveSheet(
 }
 
 export function submitRsvpToDrive(record, options) {
+  const attending = Boolean(record.attending);
+  const companions = attending ? Number(record.companions) || 0 : 0;
+  const companionNames =
+    attending && companions > 0 && Array.isArray(record.companionNames)
+      ? record.companionNames.slice(0, companions)
+      : [];
+
   return postToDriveSheet(
     {
       type: 'rsvp',
       guestName: record.guestName,
       previousGuestName: record.previousGuestName || '',
-      attending: Boolean(record.attending),
-      companions: record.attending ? Number(record.companions) || 0 : 0,
-      dietNotes: record.attending ? record.dietNotes || '' : '',
+      attending,
+      companions,
+      companionNames,
       message: record.message || '',
       website: record.website || '',
     },
