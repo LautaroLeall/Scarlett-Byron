@@ -2,15 +2,34 @@ import { useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronLeft, ChevronRight, X } from 'lucide-react';
+import { wrapGalleryIndex } from '../utils/weddingLogic.js';
 import { ResilientImage } from './ResilientImage.jsx';
 
 const CALM_EASE = [0.22, 1, 0.36, 1];
 
+const SLIDE_VARIANTS = {
+  enter: (dir) => ({ opacity: 0, x: dir >= 0 ? 34 : -34, scale: 0.97 }),
+  center: { opacity: 1, x: 0, scale: 1 },
+  exit: (dir) => ({ opacity: 0, x: dir >= 0 ? -34 : 34, scale: 0.97 }),
+};
+
 const stop = (event) => event.stopPropagation();
 
-export function LightboxModal({ isOpen, photos, activeIndex, onClose, onStep }) {
+export function LightboxModal({ isOpen, photos, activeIndex, direction = 1, onClose, onStep }) {
   const closeBtnRef = useRef(null);
   const touchStartXRef = useRef(null);
+
+  // Precarga inteligente de las fotos vecinas para navegación instantánea
+  useEffect(() => {
+    if (!isOpen || !Array.isArray(photos) || photos.length <= 1) return;
+    const prevPhoto = photos[wrapGalleryIndex(activeIndex, -1, photos.length)];
+    const nextPhoto = photos[wrapGalleryIndex(activeIndex, 1, photos.length)];
+    [prevPhoto, nextPhoto].forEach((item) => {
+      if (!item?.src) return;
+      const img = new window.Image();
+      img.src = item.src;
+    });
+  }, [isOpen, activeIndex, photos]);
 
   useEffect(() => {
     if (!isOpen) return undefined;
@@ -157,13 +176,15 @@ export function LightboxModal({ isOpen, photos, activeIndex, onClose, onStep }) 
 
           {/* Foto + mensaje corto (solo la foto detiene el clic; el resto del fondo cierra) */}
           <div className="relative z-10 flex flex-col items-center gap-4 max-w-[min(88vw,46rem)] pointer-events-none">
-            <AnimatePresence mode="wait" initial={false}>
+            <AnimatePresence mode="wait" initial={false} custom={direction}>
               <motion.figure
                 key={activePhoto.id}
-                initial={{ opacity: 0, scale: 0.96 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.98 }}
-                transition={{ duration: 0.38, ease: CALM_EASE }}
+                custom={direction}
+                variants={SLIDE_VARIANTS}
+                initial="enter"
+                animate="center"
+                exit="exit"
+                transition={{ duration: 0.34, ease: CALM_EASE }}
                 className="flex flex-col items-center gap-4"
               >
                 <div
