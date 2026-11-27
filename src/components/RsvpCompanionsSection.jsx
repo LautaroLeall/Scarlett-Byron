@@ -22,7 +22,10 @@ export function RsvpCompanionsSection({
           className="inline-flex items-center gap-1.5 font-label text-[11px] leading-3.5 tracking-[0.8px] font-semibold text-ink"
         >
           <Users className="w-3.5 h-3.5 text-primary shrink-0" aria-hidden="true" />
-          Cantidad de acompañantes
+          <span>Cantidad de acompañantes</span>
+          <span className="font-body text-[11px] font-normal text-ink-muted">
+            (máx. {maxGuests})
+          </span>
         </label>
         <div className="w-full sm:max-w-52 flex items-center rounded-xl bg-ivory-50 border border-outline-variant overflow-hidden min-h-11 focus-within:border-gold-dark focus-within:ring-2 focus-within:ring-gold/35">
           <button
@@ -38,13 +41,17 @@ export function RsvpCompanionsSection({
             id="rsvp-companions"
             type="text"
             inputMode="numeric"
-            pattern="[0-9]*"
+            pattern={`[0-${maxGuests}]`}
+            maxLength={maxGuests < 10 ? 1 : 2}
             enterKeyHint="next"
             disabled={submitting}
             value={companionsInput}
             onChange={(e) => onCompanionsInputChange(e.target.value)}
             onBlur={onCompanionsInputBlur}
             aria-invalid={Boolean(companionsError)}
+            aria-valuemin={0}
+            aria-valuemax={maxGuests}
+            aria-valuenow={currentCompanions}
             className="w-full min-w-0 bg-transparent py-2 text-center font-body text-[16px] lg:text-[14px] leading-5 font-semibold text-ink tabular-nums outline-none"
           />
           <button
@@ -58,9 +65,11 @@ export function RsvpCompanionsSection({
           </button>
         </div>
         <p className="font-body text-[12px] leading-4.5 text-ink-muted">
-          {currentCompanions > 0
-            ? 'Debes escribir el nombre y apellido completo de cada acompañante que asistirá.'
-            : 'Si asistes con acompañantes, selecciona la cantidad para ingresar su nombre completo.'}
+          {currentCompanions >= maxGuests
+            ? `Has alcanzado el máximo de ${maxGuests} acompañantes. Escribe el nombre y apellido completo de cada uno.`
+            : currentCompanions > 0
+              ? `Puedes sumar hasta ${maxGuests} acompañantes. Escribe el nombre y apellido completo de cada uno.`
+              : `Puedes sumar hasta ${maxGuests} acompañantes e ingresar su nombre y apellido completo.`}
         </p>
       </div>
 
