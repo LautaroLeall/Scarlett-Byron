@@ -112,6 +112,19 @@ await check('vercel.json tiene CSP habilitado para Google Apps Script, HSTS y re
   assert.equal(byKey['X-Frame-Options'], 'DENY');
   assert.equal(byKey['Referrer-Policy'], 'strict-origin-when-cross-origin');
   assert.equal(byKey['Cross-Origin-Opener-Policy'], 'same-origin-allow-popups');
+
+  const htmlRule = cfg.headers.find((h) => h.source === '/index.html');
+  assert.ok(htmlRule, 'Falta regla anti-caché para /index.html en vercel.json');
+  const htmlCache = htmlRule.headers.find((h) => h.key === 'Cache-Control')?.value || '';
+  assert.ok(htmlCache.includes('no-cache') && htmlCache.includes('must-revalidate'));
+
+  const mediaRule = cfg.headers.find((h) => h.source === '/(images|audio)/(.*)');
+  assert.ok(mediaRule, 'Falta regla Cache-Control para /(images|audio)/(.*)');
+  const mediaCache = mediaRule.headers.find((h) => h.key === 'Cache-Control')?.value || '';
+  assert.ok(
+    mediaCache.includes('max-age=0') && mediaCache.includes('must-revalidate'),
+    'Audio e imágenes deben revalidar sin quedar atrapados 7 días en caché'
+  );
 });
 
 if (failed > 0) {

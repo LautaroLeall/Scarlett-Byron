@@ -7,7 +7,8 @@ Invitación digital interactiva y responsiva con temática _La Bella y la Bestia
 ## Características principales
 
 - **Sobre 3D interactivo y música real:** apertura física secuencial sin scroll (lacre → solapa 3D → salida de tarjeta → tarjeta revelada) con reproducción instantánea de **`Young and Beautiful — Lana Del Rey`** (`public/audio/cancion.mp3`), pausa automática al cambiar de app y calendario ilustrado de **Abril 2027** con corazón en el día 10 y trazo _Para siempre_.
-- **Cuatro capítulos claros y visor de fotos aislado:** `Portada`, `Ceremonia`, `Historia` (álbum con visor en Portal a pantalla completa con bloqueo total de scroll) y `Confirmar`, sincronizados entre el Navbar, barra superior animada y riel lateral de progreso.
+- **Cuatro capítulos claros, carrusel coverflow inteligente y visor aislado:** `Portada` (retrato real en marco barroco), `Ceremonia`, `Historia` (carrusel 3D circular de **7 fotos reales** con auto-avance inteligente por visibilidad/interacción, arrastre táctil, tira de miniaturas y visor Lightbox en Portal con bloqueo total de scroll) y `Confirmar`, sincronizados entre el Navbar, barra superior animada y riel lateral de progreso.
+- **Control anti-caché y reinicio automático en celulares:** versionado automático `?v=` en audio, fotos, íconos y preloads ([`src/data/weddingData.js`](src/data/weddingData.js)), cabeceras `no-cache` / `must-revalidate` en [`vercel.json`](vercel.json) y sincronización de versión ([`src/utils/releaseReset.js`](src/utils/releaseReset.js)) que limpia almacenamiento previo, cookies y cachés una sola vez por release (o bajo demanda con `?reset=1`).
 - **Datos reales de Chile:**
   - Ceremonia religiosa y recepción en `Tucapel 2100a, La Pintana` con mapa directo y descarga de recordatorio (Google Calendar + `.ics` para iPhone/Outlook en `America/Santiago`).
   - **Código de Vestimenta:** Etiqueta Formal con muestras visuales de colores prohibidos (_Blanco y tonos similares, Azul rey, Rojo y Dorado metálico_).
@@ -49,8 +50,8 @@ Invitación digital interactiva y responsiva con temática _La Bella y la Bestia
 ## Cómo actualizar datos, fotos o música
 
 1. **Datos del evento, vestimenta o transferencia:** edita únicamente [`src/data/weddingData.js`](src/data/weddingData.js).
-2. **Música:** el archivo activo es `public/audio/cancion.mp3` (**Young and Beautiful — Lana Del Rey**).
-3. **Fotos reales:** reemplaza `couple-hero.webp` y `gallery-1..3.webp` en `public/images/` y optimízalas automáticamente con:
+2. **Música:** el archivo activo es `public/audio/cancion.mp3` (**Young and Beautiful — Lana Del Rey**). Si reemplazas el MP3, sube también `ASSET_VERSION` y `APP_RELEASE_VERSION` en [`src/data/weddingData.js`](src/data/weddingData.js) para forzar la actualización inmediata en todos los celulares.
+3. **Fotos reales:** reemplaza `couple-hero.webp` o `gallery-1..7.webp` en `public/images/`, sube `ASSET_VERSION` en [`src/data/weddingData.js`](src/data/weddingData.js) y optimízalas automáticamente con:
    ```bash
    npm run assets:optimize
    ```
@@ -58,6 +59,7 @@ Invitación digital interactiva y responsiva con temática _La Bella y la Bestia
    ```bash
    npm run og:generate
    ```
+5. **Reinicio manual desde un enlace (opcional):** abrir la invitación con `?reset=1` limpia `localStorage`, `sessionStorage`, cookies y cachés locales del navegador y elimina automáticamente el parámetro de la URL.
 
 ---
 
