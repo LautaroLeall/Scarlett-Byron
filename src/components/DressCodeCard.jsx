@@ -15,36 +15,38 @@ export function DressCodeCard() {
       viewport={{ once: true, amount: 'some' }}
       transition={{ duration: 0.55, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
       whileHover={{ y: -3 }}
-      className="enchanted-card md:col-span-5 w-full bg-surface-container border border-outline rounded-2xl p-5 sm:p-6 shadow-sm flex flex-col justify-between gap-4"
+      className="enchanted-card md:col-span-5 w-full bg-surface-container border border-outline rounded-2xl p-5 sm:p-6 flex flex-col justify-between gap-4 overflow-hidden"
     >
-      <div className="flex items-start justify-between gap-4">
+      <span
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-x-0 top-0 h-1 bg-linear-to-r from-crimson via-gold to-royal-900"
+      />
+
+      <div className="flex items-start justify-between gap-4 pt-1">
         <div className="flex flex-col gap-1.5">
-          <h3 className="font-headline text-[16px] sm:text-[17px] leading-5.5 tracking-[1px] font-semibold text-ink">
+          <h3 className="font-headline text-[16px] sm:text-[17px] leading-5.5 tracking-[1px] font-semibold text-royal-900">
             {dressCode.title}
           </h3>
           <p className="font-body text-[14px] leading-5.5 font-semibold text-ink">
             {dressCode.style}
           </p>
-          <p className="font-body text-[13px] leading-5 text-ink-muted">
-            {dressCode.description}
-          </p>
         </div>
 
-        {/* Íconos traje y vestido de gala */}
+        {/* Íconos traje y vestido de gala en medallón azul real */}
         <div
-          className="flex items-center gap-2 shrink-0 bg-ivory-100/80 border border-outline-variant rounded-xl px-3 py-3.5"
+          className="flex items-center gap-2 shrink-0 bg-royal-900 border border-gold/70 rounded-xl px-3 py-3.5 shadow-xs"
           aria-hidden="true"
         >
           <svg width="24" height="42" viewBox="0 0 28 48" fill="none">
-            <path d="M8 6 L14 10 L20 6 L24 14 L21 16 L20 44 L8 44 L7 16 L4 14 Z" fill="#2C241E" />
-            <path d="M12 6 L14 14 L16 6" stroke="#FDFBF7" strokeWidth="1.4" />
+            <path d="M8 6 L14 10 L20 6 L24 14 L21 16 L20 44 L8 44 L7 16 L4 14 Z" fill="#F8E8BE" />
+            <path d="M12 6 L14 14 L16 6" stroke="#112247" strokeWidth="1.4" />
           </svg>
           <svg width="28" height="42" viewBox="0 0 32 48" fill="none">
             <path
               d="M11 6 L16 11 L21 6 L20 18 L28 44 L4 44 L12 18 Z"
-              stroke="#96712C"
+              stroke="#E8CC88"
               strokeWidth="1.5"
-              fill="#FDFBF7"
+              fill="rgba(248, 232, 190, 0.14)"
             />
           </svg>
         </div>
