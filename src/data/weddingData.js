@@ -174,8 +174,12 @@ export const WEDDING_DETAILS = {
   },
   rsvp: {
     deadline: '15 de enero',
-    maxGuests: 10,
+    maxGuests: 2,
     maxSongsPerGuest: 5,
+    adultsOnlyNotice:
+      'Con todo nuestro amor, les pedimos que esta celebración sea solo para adultos.',
+    adultsOnlySubnote:
+      'Así podrán disfrutar el día con nosotros, tranquilos y sin preocupaciones.',
     storageKey: 'scarlett_byron_rsvp_v2',
     songsStorageKey: 'scarlett_byron_songs_v2',
   },
