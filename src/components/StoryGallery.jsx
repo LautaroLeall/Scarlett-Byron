@@ -38,15 +38,20 @@ export function StoryGallery() {
         viewport={{ once: true, amount: 'some' }}
         transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
         aria-label="Nuestra Historia"
-        className="enchanted-card md:col-span-7 w-full bg-surface-container border border-outline rounded-2xl p-5 sm:p-6 shadow-sm flex flex-col items-center justify-between gap-4"
+        className="enchanted-card md:col-span-7 w-full bg-surface-container border border-outline rounded-2xl p-5 sm:p-6 flex flex-col items-center justify-between gap-4 overflow-hidden"
       >
-        <div className="flex flex-col items-center gap-1 text-center">
-          <h3 className="font-headline text-[16px] sm:text-[17px] leading-5.5 tracking-[1px] font-semibold text-ink">
+        <span
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-x-0 top-0 h-1 bg-linear-to-r from-royal-900 via-gold to-royal-900"
+        />
+
+        <div className="flex flex-col items-center gap-1 text-center pt-1">
+          <h3 className="font-headline text-[16px] sm:text-[17px] leading-5.5 tracking-[1px] font-semibold text-royal-900">
             Nuestra Historia
           </h3>
           <p className="font-body text-[12px] text-ink-muted">
             {hasPhotos
-              ? 'Toca cualquier fotografía para abrir el álbum'
+              ? 'Te invitamos a abrir nuestro álbum'
               : 'Muy pronto compartiremos nuestro álbum de fotos'}
           </p>
         </div>
@@ -67,7 +72,7 @@ export function StoryGallery() {
                 whileTap={{ scale: 0.92 }}
                 onClick={() => stepPhoto(-1)}
                 aria-label="Foto anterior"
-                className="w-11 h-11 rounded-full border border-outline-variant bg-ivory-50 flex items-center justify-center text-ink shrink-0 hover:bg-ivory-200 hover:border-gold-dark transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-dark"
+                className="w-11 h-11 rounded-full border border-gold/60 bg-royal-900 flex items-center justify-center text-champagne shrink-0 hover:bg-royal-800 transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-dark"
               >
                 <ChevronLeft className="w-5 h-5" aria-hidden="true" />
               </motion.button>
@@ -105,7 +110,7 @@ export function StoryGallery() {
                 whileTap={{ scale: 0.92 }}
                 onClick={() => stepPhoto(1)}
                 aria-label="Siguiente foto"
-                className="w-11 h-11 rounded-full border border-outline-variant bg-ivory-50 flex items-center justify-center text-ink shrink-0 hover:bg-ivory-200 hover:border-gold-dark transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-dark"
+                className="w-11 h-11 rounded-full border border-gold/60 bg-royal-900 flex items-center justify-center text-champagne shrink-0 hover:bg-royal-800 transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-dark"
               >
                 <ChevronRight className="w-5 h-5" aria-hidden="true" />
               </motion.button>
@@ -128,7 +133,7 @@ export function StoryGallery() {
                 type="button"
                 whileTap={{ scale: 0.96 }}
                 onClick={() => openLightboxAt(activeIndex)}
-                className="min-h-11 px-4 font-label text-[12px] tracking-[0.8px] uppercase font-semibold text-crimson underline underline-offset-4 hover:text-ink transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-dark rounded-lg"
+                className="min-h-11 px-4 font-label text-[12px] tracking-[0.8px] uppercase font-semibold text-crimson underline underline-offset-4 hover:text-royal-900 transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-dark rounded-lg"
               >
                 Ver Álbum Completo
               </motion.button>
