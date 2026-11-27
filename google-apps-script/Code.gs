@@ -15,7 +15,7 @@ const SHEET_RSVP = "Confirmaciones";
 const SHEET_ATTENDING = "Solo Asisten";
 const SHEET_SONGS = "Musica";
 const TIMEZONE = "America/Santiago";
-const MAX_COMPANIONS = 10;
+const MAX_COMPANIONS = 2;
 const MAX_SONGS_PER_GUEST = 5;
 
 function sanitizeCell(value, maxLen) {
@@ -451,12 +451,27 @@ function doPost(e) {
       }
 
       const attending = Boolean(data.attending);
-      const companions = attending
-        ? Math.max(
-            0,
-            Math.min(MAX_COMPANIONS, parseInt(data.companions, 10) || 0),
-          )
-        : 0;
+      let companions = 0;
+      if (attending) {
+        const rawCompanions =
+          data.companions === "" ||
+          data.companions === null ||
+          data.companions === undefined
+            ? 0
+            : Number(data.companions);
+        if (
+          !Number.isInteger(rawCompanions) ||
+          rawCompanions < 0 ||
+          rawCompanions > MAX_COMPANIONS
+        ) {
+          return jsonResponse({
+            ok: false,
+            code: "MAX_COMPANIONS_EXCEEDED",
+            error: `Solo se permiten hasta ${MAX_COMPANIONS} acompañantes por confirmación.`,
+          });
+        }
+        companions = rawCompanions;
+      }
       const totalPeople = attending ? 1 + companions : 0;
 
       let companionNamesText = "";
