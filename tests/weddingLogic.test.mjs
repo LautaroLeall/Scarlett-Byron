@@ -6,6 +6,7 @@ import { fileURLToPath } from 'node:url';
 import {
   calculateCountdown,
   wrapGalleryIndex,
+  getCircularOffset,
   normalizeMatchKey,
   normalizeCompanions,
   validateRsvpForm,
@@ -27,11 +28,15 @@ import {
 } from '../src/services/driveSheets.js';
 import { renderSeoHtml, resolveSiteUrl } from '../scripts/seoAutoPlugin.mjs';
 import {
+  APP_RELEASE_VERSION,
+  ASSET_VERSION,
   GALLERY_PHOTOS,
   IMAGES,
   NAV_SECTIONS,
   WEDDING_DETAILS,
+  versionedAsset,
 } from '../src/data/weddingData.js';
+import { RELEASE_STORAGE_KEY, syncAppReleaseVersion } from '../src/utils/releaseReset.js';
 
 const ROOT = fileURLToPath(new URL('..', import.meta.url));
 const PUBLIC_DIR = path.join(ROOT, 'public');
@@ -56,11 +61,20 @@ test('calculateCountdown clampa a cero cuando la fecha ya pasó o es inválida',
   assert.equal(invalid.isFinished, true);
 });
 
-test('wrapGalleryIndex cicla correctamente hacia adelante y hacia atrás', () => {
-  assert.equal(wrapGalleryIndex(0, -1, 3), 2);
-  assert.equal(wrapGalleryIndex(2, 1, 3), 0);
+test('wrapGalleryIndex y getCircularOffset calculan el salto circular más corto en el carrusel', () => {
+  assert.equal(wrapGalleryIndex(0, -1, 7), 6);
+  assert.equal(wrapGalleryIndex(6, 1, 7), 0);
   assert.equal(wrapGalleryIndex(1, -5, 3), 2);
   assert.equal(wrapGalleryIndex(0, 1, 0), 0);
+
+  assert.equal(getCircularOffset(0, 0, 7), 0);
+  assert.equal(getCircularOffset(1, 0, 7), 1);
+  assert.equal(getCircularOffset(6, 0, 7), -1);
+  assert.equal(getCircularOffset(0, 6, 7), 1);
+  assert.equal(getCircularOffset(5, 0, 7), -2);
+  assert.equal(getCircularOffset(1, 6, 7), 2);
+  assert.equal(getCircularOffset(2, 0, 3), -1);
+  assert.equal(getCircularOffset(0, 0, 0), 0);
 });
 
 test('normalizeMatchKey unifica tildes, mayúsculas y espacios extra para anti-duplicados', () => {
@@ -465,11 +479,12 @@ test('resolveSiteUrl y renderSeoHtml inyectan URLs absolutas HTTPS y JSON-LD Eve
   const rawHtml = fs.readFileSync(path.join(ROOT, 'index.html'), 'utf8');
   const rendered = renderSeoHtml(rawHtml, { VITE_SITE_URL: 'https://scarlett-byron.vercel.app/' });
   assert.ok(!/__[A-Z_]+__/.test(rendered));
-  assert.ok(rendered.includes('https://scarlett-byron.vercel.app/og-image.jpg?v=4'));
+  assert.ok(rendered.includes('https://scarlett-byron.vercel.app/og-image.jpg?v=5'));
+  assert.ok(rendered.includes(`/images/castle-bg.webp?v=${ASSET_VERSION}`));
   assert.ok(rendered.includes('Invitación de matrimonio de Scarlett &amp; Byron'));
 });
 
-test('weddingData mantiene integridad completa de datos reales y todos los archivos referenciados existen en public/', () => {
+test('weddingData mantiene integridad completa de datos reales, versionado anti-caché y archivos físicos', () => {
   assert.equal(WEDDING_DETAILS.rsvp.deadline, '15 de enero');
   assert.equal(WEDDING_DETAILS.timezone, 'America/Santiago');
   assert.equal(WEDDING_DETAILS.gifts.entity, 'Banco Falabella');
@@ -480,16 +495,103 @@ test('weddingData mantiene integridad completa de datos reales y todos los archi
   assert.ok(WEDDING_DETAILS.gifts.end.length > 10);
   assert.equal(WEDDING_DETAILS.dressCode.restrictedColors.length, 4);
   assert.equal(NAV_SECTIONS.length, 4);
+  assert.equal(GALLERY_PHOTOS.length, 7);
+  assert.ok(GALLERY_PHOTOS.every((photo) => photo.src !== IMAGES.coupleHero));
+  assert.equal(versionedAsset('/audio/cancion.mp3?v=old', 'v9'), '/audio/cancion.mp3?v=v9');
 
-  // Verificar que todas las imágenes y el audio declarados existen físicamente en public/
+  // Verificar que todas las imágenes y el audio tienen query anti-caché (?v=) y existen físicamente
   for (const relPath of Object.values(IMAGES)) {
-    const abs = path.join(PUBLIC_DIR, relPath.replace(/^\//, ''));
+    assert.ok(relPath.includes(`?v=${ASSET_VERSION}`), `Falta versión anti-caché en ${relPath}`);
+    const abs = path.join(PUBLIC_DIR, relPath.split('?')[0].replace(/^\//, ''));
     assert.ok(fs.existsSync(abs), `Falta imagen referenciada en IMAGES: ${relPath}`);
   }
   for (const photo of GALLERY_PHOTOS) {
-    const abs = path.join(PUBLIC_DIR, photo.src.replace(/^\//, ''));
+    assert.ok(photo.src.includes(`?v=${ASSET_VERSION}`), `Falta versión anti-caché en ${photo.src}`);
+    const abs = path.join(PUBLIC_DIR, photo.src.split('?')[0].replace(/^\//, ''));
     assert.ok(fs.existsSync(abs), `Falta foto de galería: ${photo.src}`);
   }
-  const audioAbs = path.join(PUBLIC_DIR, WEDDING_DETAILS.audio.src.replace(/^\//, ''));
+  assert.ok(
+    WEDDING_DETAILS.audio.src.includes(`?v=${ASSET_VERSION}`),
+    'El audio debe incluir versión anti-caché para forzar la canción más reciente'
+  );
+  const audioAbs = path.join(PUBLIC_DIR, WEDDING_DETAILS.audio.src.split('?')[0].replace(/^\//, ''));
   assert.ok(fs.existsSync(audioAbs), `Falta archivo de audio: ${WEDDING_DETAILS.audio.src}`);
+});
+
+test('syncAppReleaseVersion reinicia almacenamiento, cookies y cachés solo al cambiar versión o con ?reset=1', async () => {
+  const localMap = new Map([['scarlett_byron_rsvp_v2', '{"guestName":"Prueba Test"}']]);
+  const sessionMap = new Map([['tmp', '1']]);
+  const deletedCaches = [];
+  let swUnregistered = 0;
+  let replacedUrl = null;
+  const cookieWrites = [];
+
+  const mockEnv = {
+    location: { pathname: '/', search: '', hash: '' },
+    history: {
+      replaceState: (_state, _title, url) => {
+        replacedUrl = url;
+      },
+    },
+    localStorage: {
+      getItem: (k) => (localMap.has(k) ? localMap.get(k) : null),
+      setItem: (k, v) => localMap.set(k, String(v)),
+      clear: () => localMap.clear(),
+    },
+    sessionStorage: {
+      clear: () => sessionMap.clear(),
+    },
+    document: {
+      get cookie() {
+        return 'old_cookie=1; theme=old';
+      },
+      set cookie(val) {
+        cookieWrites.push(val);
+      },
+    },
+    caches: {
+      keys: async () => ['workbox-precache-v1', 'audio-cache'],
+      delete: async (k) => {
+        deletedCaches.push(k);
+        return true;
+      },
+    },
+    navigator: {
+      serviceWorker: {
+        getRegistrations: async () => [
+          {
+            unregister: async () => {
+              swUnregistered++;
+              return true;
+            },
+          },
+        ],
+      },
+    },
+  };
+
+  // Primera visita con nueva versión -> limpia todo y guarda la versión actual
+  const firstRun = syncAppReleaseVersion(APP_RELEASE_VERSION, mockEnv);
+  await new Promise((r) => setTimeout(r, 15));
+  assert.equal(firstRun.reset, true);
+  assert.equal(localMap.get(RELEASE_STORAGE_KEY), APP_RELEASE_VERSION);
+  assert.equal(localMap.has('scarlett_byron_rsvp_v2'), false);
+  assert.equal(sessionMap.size, 0);
+  assert.equal(cookieWrites.length, 2);
+  assert.deepEqual(deletedCaches, ['workbox-precache-v1', 'audio-cache']);
+  assert.equal(swUnregistered, 1);
+
+  // Segunda visita en la misma versión -> conserva el RSVP real del invitado
+  localMap.set('scarlett_byron_rsvp_v2', '{"guestName":"Camila Rojas"}');
+  const secondRun = syncAppReleaseVersion(APP_RELEASE_VERSION, mockEnv);
+  assert.equal(secondRun.reset, false);
+  assert.equal(localMap.get('scarlett_byron_rsvp_v2'), '{"guestName":"Camila Rojas"}');
+
+  // Visita manual con ?reset=1 -> fuerza limpieza y quita el parámetro de la URL
+  mockEnv.location.search = '?reset=1&foo=bar';
+  const forcedRun = syncAppReleaseVersion(APP_RELEASE_VERSION, mockEnv);
+  assert.equal(forcedRun.reset, true);
+  assert.equal(forcedRun.forced, true);
+  assert.equal(localMap.has('scarlett_byron_rsvp_v2'), false);
+  assert.equal(replacedUrl, '/?foo=bar');
 });
