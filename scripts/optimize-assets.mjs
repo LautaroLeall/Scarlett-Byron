@@ -20,9 +20,13 @@ const MAX_DIMENSIONS = {
   'cogsworth.webp': 280,
   'chip.webp': 260,
   'couple-hero.webp': 900,
-  'gallery-1.webp': 1000,
-  'gallery-2.webp': 1000,
-  'gallery-3.webp': 1000,
+  'gallery-1.webp': 1200,
+  'gallery-2.webp': 1200,
+  'gallery-3.webp': 1200,
+  'gallery-4.webp': 1200,
+  'gallery-5.webp': 1200,
+  'gallery-6.webp': 1200,
+  'gallery-7.webp': 1200,
 };
 
 function fmtKb(bytes) {
