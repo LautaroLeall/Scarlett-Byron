@@ -317,9 +317,26 @@ export function RsvpFormCard({ savedRsvp = null, onRsvpSaved }) {
               submitting={submitting}
               onStepCompanions={stepCompanions}
               onCompanionsInputChange={(rawValue) => {
-                const digits = rawValue.replace(/\D/g, '').slice(0, 2);
-                setCompanionsInput(digits);
-                syncCompanionCount(normalizeCompanions(digits, rsvp.maxGuests));
+                const digits = rawValue.replace(/\D/g, '');
+                if (!digits) {
+                  setCompanionsInput('');
+                  syncCompanionCount(0);
+                  clearNotices();
+                  return;
+                }
+                const parsed = Number.parseInt(digits, 10);
+                if (parsed > rsvp.maxGuests) {
+                  setCompanionsInput(String(rsvp.maxGuests));
+                  syncCompanionCount(rsvp.maxGuests);
+                  setErrors((prev) => ({
+                    ...prev,
+                    companions: `Puedes sumar como máximo ${rsvp.maxGuests} acompañantes.`,
+                  }));
+                  clearNotices();
+                  return;
+                }
+                setCompanionsInput(String(parsed));
+                syncCompanionCount(parsed);
                 clearNotices();
               }}
               onCompanionsInputBlur={() => setCompanionsInput(String(currentCompanions))}
@@ -424,16 +441,14 @@ export function RsvpFormCard({ savedRsvp = null, onRsvpSaved }) {
                       : 'Confirmación registrada'}
                   </span>
                 </div>
-                <p className="font-body text-[13px] leading-5 text-ink font-medium">
-                  {savedRsvp.action === 'updated'
-                    ? `¡Listo, ${savedRsvp.guestName}! Actualizamos tu confirmación (`
-                    : `¡Gracias, ${savedRsvp.guestName}! Tu respuesta quedó guardada en nuestra lista (`}
+                <p className="font-body text-[13px] leading-5 text-ink font-semibold">
+                  ¡Gracias, {savedRsvp.guestName}! (
                   {savedRsvp.attending
                     ? savedRsvp.companions > 0
                       ? `Asistirá + ${savedRsvp.companions} acomp.`
                       : 'Asistirá'
                     : 'No asistirá'}
-                  ).
+                  )
                 </p>
                 {savedRsvp.attending && savedRsvp.companionNames?.length > 0 && (
                   <p className="font-body text-[12px] leading-4.5 text-ink-muted">
@@ -441,9 +456,14 @@ export function RsvpFormCard({ savedRsvp = null, onRsvpSaved }) {
                     {savedRsvp.companionNames.join(', ')}
                   </p>
                 )}
-                <p className="font-body text-[12px] leading-4.5 text-ink-muted">
-                  Ya tienes habilitada la sección de música con tu nombre.
-                </p>
+                <div className="mt-1 pt-2.5 border-t border-gold/35 w-full flex flex-col gap-1">
+                  <p className="font-body text-[12.5px] leading-5 text-ink text-pretty">
+                    {rsvp.adultsOnlyNotice}
+                  </p>
+                  <p className="font-body text-[12px] leading-4.5 text-ink-muted italic text-pretty">
+                    {rsvp.adultsOnlySubnote}
+                  </p>
+                </div>
               </motion.div>
             )}
           </AnimatePresence>
