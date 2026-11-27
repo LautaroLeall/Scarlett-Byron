@@ -5,6 +5,8 @@ export function ResilientImage({
   src,
   alt,
   className = '',
+  style,
+  draggable,
   fallbackLabel,
   loading = 'lazy',
 }) {
@@ -31,6 +33,8 @@ export function ResilientImage({
       alt={alt}
       loading={loading}
       decoding="async"
+      draggable={draggable}
+      style={style}
       onError={() => setHasError(true)}
       className={className}
     />
