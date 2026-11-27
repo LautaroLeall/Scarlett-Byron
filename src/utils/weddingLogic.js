@@ -25,6 +25,18 @@ export function wrapGalleryIndex(current, delta, total) {
 }
 
 /**
+ * Devuelve la distancia circular más corta desde activeIndex hacia index
+ * (ej. con 8 fotos: desde 7 hacia 0 devuelve +1; desde 0 hacia 7 devuelve -1).
+ */
+export function getCircularOffset(index, activeIndex, total) {
+  if (total <= 0) return 0;
+  let diff = (index - activeIndex) % total;
+  if (diff > total / 2) diff -= total;
+  if (diff <= -total / 2) diff += total;
+  return diff;
+}
+
+/**
  * Normaliza nombres y canciones para detectar duplicados ignorando mayúsculas,
  * tildes y espacios múltiples (ej. "Cámila  Rojas" === "camila rojas").
  */
