@@ -1,8 +1,9 @@
 import { motion } from 'framer-motion';
-import { Castle, Church, PartyPopper, MapPin, CalendarPlus, Download } from 'lucide-react';
+import { Church, PartyPopper, MapPin, CalendarPlus, Download } from 'lucide-react';
 import { IMAGES, WEDDING_DETAILS } from '../data/weddingData.js';
 import { buildGoogleCalendarUrl, downloadIcsFile } from '../utils/calendar.js';
 import { EnchantedCharacter } from './EnchantedCharacter.jsx';
+import { BaroqueDivider } from './RoyalOrnaments.jsx';
 
 const cardRevealVariants = {
   hidden: { opacity: 0, y: 26, scale: 0.98 },
@@ -49,16 +50,22 @@ function EventCard({ eventData, IconComponent, delayIndex, characterSlot = null 
       whileInView="visible"
       viewport={{ once: true, amount: 'some' }}
       whileHover={{ y: -3 }}
-      className="enchanted-card relative w-full bg-surface-container border border-outline rounded-2xl p-5 sm:p-6 shadow-sm flex flex-col justify-between gap-5"
+      className="enchanted-card relative overflow-hidden w-full bg-surface-container border border-outline rounded-2xl p-5 sm:p-6 flex flex-col justify-between gap-5"
     >
-      <div className="flex items-start justify-between gap-3">
+      {/* Filete superior azul real y dorado */}
+      <span
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-x-0 top-0 h-1 bg-linear-to-r from-royal-900 via-gold to-crimson"
+      />
+
+      <div className="flex items-start justify-between gap-3 pt-1">
         <div className="flex flex-col gap-4 flex-1 min-w-0">
           <div className="flex items-start gap-3.5">
-            <div className="w-11 h-11 rounded-xl bg-ivory-100 border border-outline-variant flex items-center justify-center shrink-0">
-              <IconComponent className="w-5 h-5 text-primary" aria-hidden="true" />
+            <div className="w-11 h-11 rounded-xl bg-royal-900 border border-gold/70 flex items-center justify-center shrink-0 shadow-xs">
+              <IconComponent className="w-5 h-5 text-gold-light" aria-hidden="true" />
             </div>
             <div className="min-w-0">
-              <h3 className="font-headline text-[16px] sm:text-[17px] leading-5.5 tracking-[1px] font-semibold text-ink">
+              <h3 className="font-headline text-[16px] sm:text-[17px] leading-5.5 tracking-[1px] font-semibold text-royal-900">
                 {eventData.title}
               </h3>
               <p className="font-title text-[15px] leading-5.5 font-semibold text-crimson mt-0.5">
@@ -98,9 +105,9 @@ function EventCard({ eventData, IconComponent, delayIndex, characterSlot = null 
             href={googleCalUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="btn-ivory min-h-11 inline-flex items-center justify-center gap-1.5 px-2.5 sm:px-4 py-2.5 rounded-xl uppercase whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-dark focus-visible:ring-offset-2 focus-visible:ring-offset-surface-container"
+            className="btn-royal min-h-11 inline-flex items-center justify-center gap-1.5 px-2.5 sm:px-4 py-2.5 rounded-xl uppercase whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-dark focus-visible:ring-offset-2 focus-visible:ring-offset-surface-container"
           >
-            <CalendarPlus className="w-4 h-4 text-primary shrink-0" aria-hidden="true" />
+            <CalendarPlus className="w-4 h-4 text-gold-light shrink-0" aria-hidden="true" />
             <span className="font-label text-[11px] leading-3.5 tracking-[0.8px] font-semibold">
               Agendar
             </span>
@@ -110,7 +117,7 @@ function EventCard({ eventData, IconComponent, delayIndex, characterSlot = null 
         <button
           type="button"
           onClick={handleDownloadIcs}
-          className="inline-flex items-center justify-center gap-1.5 min-h-9 px-2 text-center text-[11px] font-label tracking-[0.5px] text-ink-muted hover:text-ink transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-dark rounded-lg"
+          className="inline-flex items-center justify-center gap-1.5 min-h-9 px-2 text-center text-[11px] font-label tracking-[0.5px] text-ink-muted hover:text-royal-900 transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-dark rounded-lg"
         >
           <Download className="w-3.5 h-3.5 text-primary shrink-0" aria-hidden="true" />
           <span>Descargar recordatorio (.ics)</span>
@@ -130,14 +137,13 @@ export function EventLocationsSection() {
         transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
         className="flex flex-col items-center text-center gap-2.5"
       >
-        <h2 className="font-headline text-[22px] sm:text-[26px] leading-7.5 tracking-[1.4px] font-semibold text-ink uppercase">
+        <span className="font-label text-[11px] leading-4 tracking-[1.8px] font-semibold uppercase text-crimson">
+          Cuándo y Dónde
+        </span>
+        <h2 className="font-headline text-[22px] sm:text-[26px] leading-7.5 tracking-[1.4px] font-semibold text-royal-900 uppercase">
           Ceremonia y Recepción
         </h2>
-        <div className="w-full max-w-md flex items-center justify-center gap-4" aria-hidden="true">
-          <span className="h-px flex-1 bg-linear-to-r from-transparent via-outline to-outline-variant" />
-          <Castle className="w-5 h-5 text-primary" />
-          <span className="h-px flex-1 bg-linear-to-l from-transparent via-outline to-outline-variant" />
-        </div>
+        <BaroqueDivider />
       </motion.header>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-5 sm:gap-6 items-stretch">
@@ -157,7 +163,6 @@ export function EventLocationsSection() {
               alt={WEDDING_DETAILS.characters.lumiere.alt}
               quote={WEDDING_DETAILS.characters.lumiere.quote}
               idleAnimation="candle"
-              bubbleAlign="right"
               imgClassName="w-16 h-24 sm:w-20 sm:h-28 object-contain"
             />
           }
