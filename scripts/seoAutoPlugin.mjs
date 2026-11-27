@@ -1,7 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { WEDDING_DETAILS } from '../src/data/weddingData.js';
+import { ASSET_VERSION, WEDDING_DETAILS } from '../src/data/weddingData.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const PROJECT_ROOT = path.resolve(__dirname, '..');
@@ -174,6 +174,7 @@ export function renderSeoHtml(rawHtml, env = process.env) {
     __OG_IMAGE_URL__: escapeHtml(ogImageUrl),
     __OG_IMAGE_ALT__: escapeHtml(`Invitación de matrimonio de ${WEDDING_DETAILS.coupleNames}`),
     __THEME_COLOR__: escapeHtml(WEDDING_DETAILS.seo.themeColor),
+    __ASSET_VERSION__: escapeHtml(ASSET_VERSION),
     __JSON_LD__: buildEventJsonLd(siteUrl, ogImageClean),
   };
 
