@@ -1,6 +1,11 @@
 export const IMAGES = {
   crown: '/images/crown.svg',
   waxSeal: '/images/wax-seal.webp',
+  waxSealCrimson: '/images/wax-seal-crimson.webp',
+  castleBg: '/images/castle-bg.webp',
+  rosesCorner: '/images/roses-corner.webp',
+  goldRoses: '/images/gold-roses.webp',
+  butterflyGold: '/images/butterfly-gold.webp',
   coupleHero: '/images/couple-hero.webp',
   enchantedRose: '/images/enchanted-rose.webp',
   baroqueRoseFrame: '/images/baroque-frame.webp',
@@ -10,24 +15,31 @@ export const IMAGES = {
   chip: '/images/chip.webp',
 };
 
+export const NAV_SECTIONS = [
+  { id: 'portada', label: 'Portada' },
+  { id: 'ceremonia', label: 'Ceremonia' },
+  { id: 'historia', label: 'Historia' },
+  { id: 'confirmar', label: 'Confirmar' },
+];
+
 export const GALLERY_PHOTOS = [
   {
     id: 'rose-garden',
     src: '/images/gallery-1.webp',
     alt: 'Scarlett y Byron caminando bajo un arco de rosas',
-    caption: 'Nuestro compromiso en el jardín de rosas',
+    caption: 'Un capítulo más de nuestra historia capturada para siempre',
   },
   {
     id: 'candlelight',
     src: '/images/gallery-2.webp',
     alt: 'Scarlett y Byron sonriendo juntos a la luz de las velas',
-    caption: 'Una noche inolvidable a la luz de las velas',
+    caption: 'Un capítulo más de nuestra historia capturada para siempre',
   },
   {
     id: 'sunset-dance',
     src: '/images/gallery-3.webp',
     alt: 'Scarlett y Byron bailando al atardecer',
-    caption: 'Nuestro primer baile al atardecer',
+    caption: 'Un capítulo más de nuestra historia capturada para siempre',
   },
 ];
 
@@ -36,7 +48,7 @@ export const WEDDING_DETAILS = {
   monogram: 'S&B',
   eyebrow: 'Nuestro Matrimonio',
   envelopeEyebrow: 'Invitación de Boda',
-  tagline: 'Una historia tan antigua como el tiempo',
+  tagline: 'La belleza de lo que permanece',
   heroSubtitle: 'Te invitamos a ser parte de nuestra historia de amor',
   closingQuote: '¡Te esperamos para celebrar este cuento de amor!',
   dateFormatted: '10 de Abril, 2027',
@@ -47,15 +59,15 @@ export const WEDDING_DETAILS = {
     // En Vercel se detecta automáticamente con VERCEL_PROJECT_PRODUCTION_URL o VITE_SITE_URL.
     siteUrl: 'https://scarlett-byron.vercel.app',
     ogImagePath: '/og-image.jpg',
-    ogVersion: '2',
+    ogVersion: '4',
     title: 'Scarlett & Byron — Invitación de Matrimonio',
     ogTitle: 'Scarlett & Byron — Nuestro Matrimonio',
     siteName: 'Matrimonio de Scarlett & Byron',
     description:
-      'Te invitamos a celebrar nuestro matrimonio religioso el 10 de Abril de 2027 a las 14:00 hs en Tucapel 2100a, La Pintana. Confirma tu asistencia y sugiere tu canción.',
+      'Te invitamos a celebrar nuestra ceremonia religiosa el 10 de Abril de 2027 a las 14:00 hs en Tucapel 2100a, La Pintana. Confirma tu asistencia y sugiere tu canción.',
     ogDescription:
-      'Una historia tan antigua como el tiempo · 10 de Abril, 2027 · 14:00 hs · La Pintana. Abre tu invitación y confirma asistencia.',
-    themeColor: '#F8F2E4',
+      'La belleza de lo que permanece · 10 de Abril, 2027 · 14:00 hs · La Pintana. Abre tu invitación y confirma asistencia.',
+    themeColor: '#112245',
     countryCode: 'CL',
     locale: 'es_CL',
     lang: 'es-CL',
@@ -65,13 +77,13 @@ export const WEDDING_DETAILS = {
     title: 'Young and Beautiful — Lana Del Rey',
   },
   ceremony: {
-    title: 'Matrimonio Religioso',
+    title: 'Ceremonia religiosa',
     time: '14:00 hs',
     venue: 'Tucapel 2100a',
     address: 'La Pintana, Santiago, Chile',
     mapUrl: 'https://maps.app.goo.gl/JL7x1H3cfSguP53U7',
     calendarTitle: 'Matrimonio Religioso — Scarlett & Byron',
-    calendarDetails: 'Ceremonia de matrimonio religioso de Scarlett & Byron.',
+    calendarDetails: 'Ceremonia religiosa de Scarlett & Byron.',
     startDate: '2027-04-10T14:00:00',
     endDate: '2027-04-10T15:30:00',
     icsFileName: 'ceremonia-scarlett-byron.ics',
@@ -90,8 +102,7 @@ export const WEDDING_DETAILS = {
   },
   dressCode: {
     title: 'Código de Vestimenta',
-    style: 'Etiqueta Formal / Gala',
-    description: 'Traje formal y vestido largo',
+    style: 'Etiqueta Formal',
     note: 'Colores prohibidos:',
     restrictedColors: [
       { label: 'Blanco y tonos similares', swatch: '#FFFFFF', border: true },
@@ -105,13 +116,14 @@ export const WEDDING_DETAILS = {
   },
   gifts: {
     title: 'Mesa de Regalos',
-    subtitle: 'Si deseas hacernos un obsequio para nuestra nueva etapa:',
+    subtitle: 'Nuestro mayor regalo es poder compartir este día tan especial con ustedes y contar con su cariño y compañía.',
+    description: 'Si además desean hacernos un obsequio para acompañarnos en el comienzo de nuestra vida de casados, hemos dejado una pequeña opción que nos ayudará a construir nuestros nuevos sueños juntos.',
     entity: 'Banco Falabella',
     holder: 'Byron Hormazabal Sarmiento',
     rut: '19.186.908-7',
     accountType: 'Chequera Electrónica',
     accountNumber: '50013860033',
-    alias: '',
+    end: 'Gracias por ser parte de nuestra historia.',
   },
   driveSheets: {
     // Se lee desde VITE_SHEETS_WEBHOOK_URL en `.env` (local) o Vercel Environment Variables.
@@ -119,7 +131,7 @@ export const WEDDING_DETAILS = {
     webhookUrl: '',
   },
   rsvp: {
-    deadline: '20 de Marzo',
+    deadline: '15 de enero',
     maxGuests: 10,
     maxSongsPerGuest: 5,
     storageKey: 'scarlett_byron_rsvp_v2',
