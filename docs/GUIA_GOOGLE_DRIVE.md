@@ -8,8 +8,8 @@ Esta guía activa el guardado automático en Google Drive gratis, sin servidor e
 
 Al ejecutar `inicializarPlanilla` se configuran **4 pestañas** listas para usar desde PC o celular:
 
-1. **`Resumen`**: contadores en vivo (respuestas `Sí`, `No`, total de personas sumando acompañantes, restricciones alimentarias y canciones). Detecta automáticamente el separador regional (`;` en Chile/Argentina/España o `,` en EE. UU./México).
-2. **`Confirmaciones`**: lista maestra **sin duplicados** con **filtro nativo activado** en encabezados (para filtrar `Sí` / `No` en 1 clic), desplegable `Sí` / `No`, colores automáticos (verde/rojo) y columna `Estado` (`Nuevo` / `Actualizado`). Si un invitado vuelve a confirmar con el mismo nombre y apellido (sin importar tildes ni mayúsculas), **actualiza su fila existente en vez de duplicarlo**.
+1. **`Resumen`**: contadores en vivo (respuestas `Sí`, `No`, total de personas sumando acompañantes y canciones). Detecta automáticamente el separador regional (`;` en Chile/Argentina/España o `,` en EE. UU./México).
+2. **`Confirmaciones`**: lista maestra **sin duplicados** con **Nombres de Acompañantes** obligatorios cuando asisten con compañía, **filtro nativo activado** en encabezados (para filtrar `Sí` / `No` en 1 clic), desplegable `Sí` / `No`, colores automáticos (verde/rojo) y columna `Estado` (`Nuevo` / `Actualizado`). Si un invitado vuelve a confirmar con el mismo nombre y apellido (sin importar tildes ni mayúsculas), **actualiza su fila existente en vez de duplicarlo**.
 3. **`Solo Asisten`**: vista automática filtrada en tiempo real (`FILTER`) únicamente con quienes confirmaron **`Sí`**, lista para compartir con el salón o el catering.
 4. **`Musica`**: playlist filtrable sin duplicados globales, tope de **5 canciones por invitado** y **cero anónimos** (el script verifica que el invitado exista primero en `Confirmaciones`).
 
