@@ -220,7 +220,7 @@ export default function App() {
                     <BaroqueDivider />
                   </motion.header>
 
-                  <div className="relative z-10 grid grid-cols-1 md:grid-cols-12 gap-5 sm:gap-6 items-stretch">
+                  <div className="relative z-10 grid grid-cols-1 md:grid-cols-12 gap-5 sm:gap-6 items-center">
                     <StoryGallery />
                     <DressCodeCard />
                   </div>
