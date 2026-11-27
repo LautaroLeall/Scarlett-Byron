@@ -199,6 +199,18 @@ test('Code.gs doPost valida acompañantes obligatorios, actualiza sin duplicar y
   assert.equal(botRes.ignored, true);
   assert.equal(sheets.get('Confirmaciones').getLastRow(), 1);
 
+  // Más de 2 acompañantes -> MAX_COMPANIONS_EXCEEDED (tope estricto en servidor)
+  const tooMany = post({
+    type: 'rsvp',
+    guestName: 'Camila Rojas',
+    attending: true,
+    companions: 3,
+    companionNames: ['Martín González', 'Valentina Muñoz', 'Lucas Pérez'],
+  });
+  assert.equal(tooMany.ok, false);
+  assert.equal(tooMany.code, 'MAX_COMPANIONS_EXCEEDED');
+  assert.equal(sheets.get('Confirmaciones').getLastRow(), 1);
+
   // Falta nombre completo de acompañante -> INVALID_COMPANIONS
   const badComp = post({
     type: 'rsvp',
