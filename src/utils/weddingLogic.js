@@ -49,7 +49,7 @@ export function normalizeMatchKey(rawValue = '') {
     .toLowerCase();
 }
 
-export function normalizeCompanions(rawValue, maxGuests = 10) {
+export function normalizeCompanions(rawValue, maxGuests = 2) {
   if (rawValue === '' || rawValue === null || rawValue === undefined) return 0;
   const parsed = Number.parseInt(String(rawValue), 10);
   if (Number.isNaN(parsed)) return 0;
@@ -113,7 +113,7 @@ function validatePersonFullName(rawValue, { isCompanion = false } = {}) {
 
 export function validateRsvpForm(
   { guestName = '', attending = true, companions = 0, companionNames = [], message = '' },
-  maxGuests = 10
+  maxGuests = 2
 ) {
   const errors = {};
   const guestCheck = validatePersonFullName(guestName, { isCompanion: false });
@@ -129,8 +129,10 @@ export function validateRsvpForm(
       safeCompanions = 0;
     } else {
       const parsed = Number(companions);
-      if (!Number.isInteger(parsed) || parsed < 0 || parsed > maxGuests) {
+      if (!Number.isInteger(parsed) || parsed < 0) {
         errors.companions = `Ingresa una cantidad válida entre 0 y ${maxGuests}.`;
+      } else if (parsed > maxGuests) {
+        errors.companions = `Puedes sumar como máximo ${maxGuests} acompañantes.`;
       } else {
         safeCompanions = parsed;
       }
@@ -251,7 +253,7 @@ export function addSongSuggestion(existing, rawInput, maxItems = 5) {
   };
 }
 
-export function parseStoredRsvp(rawJson, maxGuests = 10) {
+export function parseStoredRsvp(rawJson, maxGuests = 2) {
   if (!rawJson) return null;
   try {
     const parsed = JSON.parse(rawJson);
