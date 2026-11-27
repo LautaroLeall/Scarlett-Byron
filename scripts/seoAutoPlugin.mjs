@@ -172,7 +172,7 @@ export function renderSeoHtml(rawHtml, env = process.env) {
     __OG_TITLE__: escapeHtml(WEDDING_DETAILS.seo.ogTitle),
     __OG_DESCRIPTION__: escapeHtml(WEDDING_DETAILS.seo.ogDescription),
     __OG_IMAGE_URL__: escapeHtml(ogImageUrl),
-    __OG_IMAGE_ALT__: escapeHtml(`Invitación de casamiento de ${WEDDING_DETAILS.coupleNames}`),
+    __OG_IMAGE_ALT__: escapeHtml(`Invitación de matrimonio de ${WEDDING_DETAILS.coupleNames}`),
     __THEME_COLOR__: escapeHtml(WEDDING_DETAILS.seo.themeColor),
     __JSON_LD__: buildEventJsonLd(siteUrl, ogImageClean),
   };

@@ -1,13 +1,13 @@
 {
   "name": "Scarlett & Byron — Invitación de Matrimonio",
   "short_name": "Scarlett & Byron",
-  "description": "Una historia tan antigua como el tiempo · 10 de Abril, 2027 · 14:00 hs · La Pintana. Abre tu invitación y confirma asistencia.",
+  "description": "La belleza de lo que permanece · 10 de Abril, 2027 · 14:00 hs · La Pintana. Abre tu invitación y confirma asistencia.",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
   "orientation": "portrait",
-  "background_color": "#F8F2E4",
-  "theme_color": "#F8F2E4",
+  "background_color": "#112245",
+  "theme_color": "#112245",
   "lang": "es-CL",
   "icons": [
     {
