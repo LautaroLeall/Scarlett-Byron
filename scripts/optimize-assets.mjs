@@ -7,7 +7,12 @@ const ROOT = fileURLToPath(new URL('..', import.meta.url));
 const IMAGES_DIR = path.join(ROOT, 'public', 'images');
 
 const MAX_DIMENSIONS = {
+  'castle-bg.webp': 960,
   'wax-seal.webp': 512,
+  'wax-seal-crimson.webp': 420,
+  'roses-corner.webp': 520,
+  'gold-roses.webp': 420,
+  'butterfly-gold.webp': 240,
   'baroque-frame.webp': 760,
   'enchanted-rose.webp': 540,
   'dancing-silhouette.webp': 320,
